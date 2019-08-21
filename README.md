@@ -61,9 +61,9 @@ This score will be based on the extent of victory. It is calculated as follows:
 | 2 | 0 | 7 |  
 | 2 | 1 | 6 |  
 | 1 | 0 | 6 |  
+| 3 | 3 | 5 |  
 | 2 | 2 | 5 |  
 | 1 | 1 | 5 |  
-| 0 | 0 | 5 |  
 | 0 | 1 | 4 |  
 | 1 | 2 | 4 |  
 | 0 | 2 | 3 |  
