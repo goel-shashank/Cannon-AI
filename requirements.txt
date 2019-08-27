@@ -1,0 +1,4 @@
+numpy
+multiset
+selenium
+jinja2
