@@ -115,31 +115,28 @@ function FillBoardSquares()
 
 function PlaceSoldiers()
 {
+		var places = new Array(2);
+
+		places[0] = new Array(contingent);
+		for(var i = 0; i < contingent; i++)
+				places[0][i] = (rows - 1) - i - 1;
+
+		places[1] = new Array(contingent);
+		for(var i = 0; i < contingent; i++)
+				places[1][i] = i + 1;
+
 		for(var i = 0; i < rows; i++)
 		{
-				var places = new Array(contingent);
-
-				if(i % 2 == 0)
-				{
-						for(var j = 0; j < contingent; j++)
-								places[j] = (rows - 1) - j - 1;
-				}
-				else
-				{
-						for(var j = 0; j < contingent; j++)
-								places[j] = j + 1;
-				}
-
 				for(var j = 0; j < contingent; j++)
 				{
 						piece_ctx.beginPath();
 						piece_ctx.strokeStyle = player[i % 2].color;
 						piece_ctx.lineWidth = 5;
-						piece_ctx.arc(positions[i][places[j]].x, positions[i][places[j]].y, spacing / 3.0, 0, 2 * Math.PI);
+						piece_ctx.arc(positions[i][places[i % 2][j]].x, positions[i][places[i % 2][j]].y, spacing / 3.0, 0, 2 * Math.PI);
 						piece_ctx.stroke();
 						piece_ctx.lineWidth = 1;
 
-						positions[i][places[j]].piece = Math.pow(-1, i % 2);
+						positions[i][places[i % 2][j]].piece = Math.pow(-1, i % 2);
 				}
 		}
 }
@@ -178,6 +175,7 @@ function SelectSoldier(x, y)
 {
 		if(positions[x][y].piece == Math.pow(-1, current_player))
 		{
+				console.log("sorry");
 				guide_ctx.beginPath();
 				guide_ctx.strokeStyle = "black";
 				guide_ctx.arc(positions[x][y].x, positions[x][y].y, spacing * 3 / 10, 0, Math.PI * 2);
@@ -224,11 +222,11 @@ function Guides(x, y, guide)
 		var bombx, bomby;
 		var soldierx, soldiery;
 
-		direction = current_player * 2 - 1;
+		direction = 1 - current_player * 2;
 
 		// Forward
 		dx = [-1, 0, 1];
-		dy = [1, 1, 1];
+		dy = [-1, -1, -1];
 		for (var i = 0; i < dx.length; i++)
 		{
 				tx = x + dx[i];
@@ -256,38 +254,37 @@ function Guides(x, y, guide)
 
 		// Backward
 		check = 0;
+		adjx = [-1, -1, 0, 1, 1];
+		adjy = [0, -1, -1, -1, 0];
+		for(var j = 0; j < adjx.length && check == 0; j++)
+				if(positions[x + adjx[j]][y + adjy[j] * direction].piece == Math.pow(-1, current_player + 1))
+						check = 1;
 		dx = [-1, 0, 1];
 		dy = [2, 2, 2];
-		adjx = [-1, -1, 0, 1, 1];
-		adjy = [0, 1, 1, 1, 0];
-		for (var i = 0; i < dx.length; i++)
+		if(check)
 		{
-				tx = x + dx[i];
-				ty = y + dy[i] * direction;
-
-				if(!isInBoard(tx, ty) || sign(positions[tx][ty].piece) == Math.pow(-1, current_player))
-						continue;
-
-				for(var j = 0; j < adjx.length && check == 0; j++)
+				for (var i = 0; i < dx.length; i++)
 				{
-						if(positions[x + adjx[j]][y + adjy[j] * direction].piece == Math.pow(-1, current_player + 1))
+						tx = x + dx[i];
+						ty = y + dy[i] * direction;
+
+						if(!isInBoard(tx, ty) || sign(positions[tx][ty].piece) == Math.pow(-1, current_player))
+								continue;
+
+						if(guide)
 						{
-								if(guide)
-								{
-										guide_ctx.beginPath();
-										guide_ctx.strokeStyle = "#35230a";
-										guide_ctx.arc(positions[tx][ty].x, positions[tx][ty].y, spacing / 8, 0, Math.PI * 2);
-										guide_ctx.fillStyle = "#35230a";
-										guide_ctx.fill();
-										guide_ctx.stroke();
-										positions[tx][ty].guide = 1;
-								}
-								else
-								{
-										guide_ctx.clearRect(corners[tx][ty].x, corners[tx][ty].y, spacing, spacing);
-										positions[tx][ty].guide = 0;
-								}
-								check = 1;
+								guide_ctx.beginPath();
+								guide_ctx.strokeStyle = "#35230a";
+								guide_ctx.arc(positions[tx][ty].x, positions[tx][ty].y, spacing / 8, 0, Math.PI * 2);
+								guide_ctx.fillStyle = "#35230a";
+								guide_ctx.fill();
+								guide_ctx.stroke();
+								positions[tx][ty].guide = 1;
+						}
+						else
+						{
+								guide_ctx.clearRect(corners[tx][ty].x, corners[tx][ty].y, spacing, spacing);
+								positions[tx][ty].guide = 0;
 						}
 				}
 		}
@@ -323,6 +320,9 @@ function Guides(x, y, guide)
 										{
 												if(guide)
 												{
+														console.log(i);
+														console.log(j);
+														console.log(k);
 														guide_ctx.beginPath();
 														guide_ctx.strokeStyle = "#8b0000";
 														guide_ctx.arc(positions[tx][ty].x, positions[tx][ty].y, spacing / 8, 0, Math.PI * 2);
