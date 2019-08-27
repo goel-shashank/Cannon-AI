@@ -326,7 +326,7 @@ def game_loop(args):
 	client.closeSocket()
 
 if __name__ == '__main__':
-		parser = argparse.ArgumentParser(description = 'Yinsh client')
+		parser = argparse.ArgumentParser(description = 'Cannon client')
 		parser.add_argument('ip', metavar = '0.0.0.0', type = str, help = 'Server IP')
 		parser.add_argument('port', metavar = '10000', type = int, help = 'Server port')
 		parser.add_argument('exe', metavar = 'run.sh', type = str, help = 'Your executable')
