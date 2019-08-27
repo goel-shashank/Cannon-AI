@@ -79,30 +79,15 @@ class Game:
 		return self.driver.execute_script('return current_player;')
 
 	def getValidSoldiers(self):
-		positions = list(self.driver.execute_script('return positions;'))
-		valid_soldiers = []
-		for i in range(self.rows):
-			for j in range(self.rows):
-				if(positions[i][j]['piece'] == 1 - 2 * self.get_current_player()):
-					valid_soldiers.append((i, j))
+		valid_soldiers = list(self.driver.execute_script('return player[current_player].soldiers;'))
 		return valid_soldiers
 
 	def getValidMoves(self):
-		positions = list(self.driver.execute_script('return positions;'))
-		valid_moves = []
-		for i in range(self.rows):
-			for j in range(self.rows):
-				if(positions[i][j]['guide'] == 1):
-					valid_moves.append((i, j))
+		valid_moves = list(self.driver.execute_script('return guides_move;'))
 		return valid_moves
 
 	def getValidTargets(self):
-		positions = list(self.driver.execute_script('return positions;'))
-		valid_targets = []
-		for i in range(self.rows):
-			for j in range(self.rows):
-				if(positions[i][j]['guide'] == 2):
-					valid_targets.append((i, j))
+		valid_targets = list(self.driver.execute_script('return guides_bomb;'))
 		return valid_targets
 
 	def calculate_score(self, tA, tB, sA, sB, error_state):
