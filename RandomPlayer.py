@@ -6,9 +6,9 @@ import time
 class RandomPlayer:
 
 	def __init__(self):
-		data = sys.stdin.readline().strip().split() # Initialize Environment
-		self.player = int(data[0]) - 1 # player can have values 0 and 1
-		self.n = int(data[1]) # n can have values 5, 6, or 7
+		data = sys.stdin.readline().strip().split()
+		self.player = int(data[0]) - 1
+		self.n = int(data[1])
 		self.time_left = int(data[2])
 		self.seq = int(data[3])
 		self.game = Game(self.n, self.seq)
@@ -119,7 +119,7 @@ class RandomPlayer:
 					if state != 3:
 						break
 			self.play_move_seq(move_seq)
-			
+
 			## Execute Other Player Move Sequence
 			move = sys.stdin.readline().strip()
 			self.game.execute_move(move)
