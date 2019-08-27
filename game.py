@@ -51,7 +51,7 @@ class Game:
 		options = Options()
 		options.add_argument("--disable-infobars")
 		if(mode != 'GUI'):
-			options.add_argument('headless');
+			options.add_argument('headless')
 		self.driver = webdriver.Chrome(options = options)
 
 		abs_path = os.path.abspath('Cannon.html')
@@ -60,14 +60,12 @@ class Game:
 
 		self.timer = time
 		self.townhalls = 3
-		self.centerx = int(self.display) / 2
-		self.centery = int(self.display) / 2
 		self.spacing = float(self.display) / self.rows
 
 	def click_at(self, x, y) :
 		e = self.driver.find_elements_by_id('PieceLayer')
 		action = webdriver.common.action_chains.ActionChains(self.driver)
-		action.move_to_element_with_offset(e[0], x, y)
+		action.move_to_element_with_offset(e[0], x * self.spacing + self.spacing / 2, y * self.spacing + self.spacing / 2)
 		action.click()
 		action.perform()
 
@@ -80,12 +78,32 @@ class Game:
 	def get_current_player(self):
 		return self.driver.execute_script('return current_player;')
 
-	def board2pos_coord(self, x, y):
+	def getValidSoldiers(self):
 		positions = list(self.driver.execute_script('return positions;'))
+		valid_soldiers = []
 		for i in range(self.rows):
 			for j in range(self.rows):
-				if(positions[i][j]['x'] - self.altitude / 2 < x and positions[i][j]['x'] + self.spacing / 2 > x and positions[i][j]['y'] - self.spacing / 2 < y and positions[i][j]['y'] + self.spacing / 2 > y):
-					return (i,j)
+				if(positions[i][j]['piece'] == 1 - 2 * self.get_current_player()):
+					valid_soldiers.append((i, j))
+		return valid_soldiers
+
+	def getValidMoves(self):
+		positions = list(self.driver.execute_script('return positions;'))
+		valid_moves = []
+		for i in range(self.rows):
+			for j in range(self.rows):
+				if(positions[i][j]['guide'] == 1):
+					valid_moves.append((i, j))
+		return valid_moves
+
+	def getValidTargets(self):
+		positions = list(self.driver.execute_script('return positions;'))
+		valid_targets = []
+		for i in range(self.rows):
+			for j in range(self.rows):
+				if(positions[i][j]['guide'] == 2):
+					valid_targets.append((i, j))
+		return valid_targets
 
 	def calculate_score(self, tA, tB, sA, sB, error_state):
 		if(error_state == '1'):
@@ -102,7 +120,7 @@ class Game:
 			scoreA = 10 - tB
 			scoreB = tB
 		elif(tB == 3):
-			scoreA = tA;
+			scoreA = tA
 			scoreB = 10 - tA
 		elif(tB == tA):
 			scoreA = 5
@@ -114,7 +132,8 @@ class Game:
 			scoreA = 3
 			scoreB = 7
 		elif(tA > tB):
-			scoreA = 6; scoreB = 4
+			scoreA = 6
+			scoreB = 4
 		elif(tB > tA):
 			scoreA = 4
 			scoreB = 6
