@@ -5,12 +5,11 @@ import time
 
 class RandomPlayer:
 	def __init__(self):
-		# data = sys.stdin.readline().strip().split()
-		data = [1, 10, 150]
+		data = sys.stdin.readline().strip().split()
 		self.player = int(data[0]) - 1
 		self.n = int(data[1])
 		self.time_left = int(data[2])
-		self.game = Game(self.n, 'GUI')
+		self.game = Game(self.n)
 		self.play()
 
 	def selectSoldier(self):
@@ -44,9 +43,9 @@ class RandomPlayer:
 		sys.stdout.flush()
 
 	def play(self):
-		# if(self.player == 1):
-		# 	move = sys.stdin.readline().strip()
-		# 	self.game.execute_move(move)
+		if(self.player == 1):
+			move = sys.stdin.readline().strip()
+			self.game.execute_move(move)
 		while(1):
 			move_sequence = []
 			while(1):
@@ -76,7 +75,7 @@ class RandomPlayer:
 
 			self.play_move_seq(move_sequence)
 
-			# move = sys.stdin.readline().strip()
-			# self.game.execute_move(move)
+			move = sys.stdin.readline().strip()
+			self.game.execute_move(move)
 
 random_player = RandomPlayer()
