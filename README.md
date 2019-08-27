@@ -13,7 +13,7 @@ The assignment documentation can be found [here]()
 
 ## Rules
 The rules of the game can be found [here](https://nestorgames.com/rulebooks/CANNON_EN.pdf)
-We will be having three TownHalls instead of 1 and that too fixed in position.
+We will be having 3 TownHalls instead of 1 and that too fixed in position.
 
 ## Dependencies
 + Python2.7
@@ -46,10 +46,12 @@ Here are the sample instructions used to match two random players against each o
 ### Setup Server
 `python server.py 10000 -n 10 -NC 2 -TL 150 -LOG server.log`
 ### Setup Client 1
-`export PATH=$PATH:'/home/chrome_driver_directory`
+`export PATH=$PATH:'/home/chrome_driver_directory'`
+
 `python client.py 0.0.0.0 10000 RandomPlayer.py -mode GUI`
 ### Setup Client 2
-`export PATH=$PATH:'/home/chrome_driver_directory`
+`export PATH=$PATH:'/home/chrome_driver_directory'`
+
 `python client.py 0.0.0.0 10000 RandomPlayer.py`
 
 ## Gameplay
@@ -69,10 +71,12 @@ The vertical direction towards up is the positive y-axis.
 
 #### Moving a Soldier
 To move a soldier from (1, 2) to (2, 4)
+
 `S 1 2 M 2 4`
 
 #### Throwing a Bomb
 To throw a bomb, select any of the soldiers of a cannon, and throw it at any viable target of the cannon(s) formed by that soldier.
+
 `S 2 4 B 6 4`
 
 ## Scoring
