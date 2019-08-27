@@ -1,5 +1,5 @@
 from threading import Thread
-from queue import Queue, Empty
+from Queue import Queue, Empty
 
 class NonBlockingStreamReader:
 

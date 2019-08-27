@@ -152,9 +152,9 @@ class Server:
                                 self.SendData2Client(client_1, data)
                                 if not data:
                                         break
-                                print(str(data) + 'Received from client 0')
+                                print(str(data) + ' Received from client 0')
                                 if not self.log_file_handle is None:
-                                    self.log_file_handle.write((str(data) + ' Received from client 0\n').encode())
+                                    self.log_file_handle.write((str(data) + ' Received from client 0\n'))
                                 data = json.loads(data)
                                 if data['action'] == 'FINISH' or data['action'] == 'KILLPROC':
                                         # if not self.log_file_handle is None:
@@ -162,9 +162,9 @@ class Server:
                                         break
                                 data = self.RecvDataFromClient(client_1)
                                 self.SendData2Client(client_0, data)
-                                print(str(data) + 'Received from client 1')
+                                print(str(data) + ' Received from client 1')
                                 if not self.log_file_handle is None:
-                                    self.log_file_handle.write((str(data) + ' Received from client 1\n').encode())
+                                    self.log_file_handle.write((str(data) + ' Received from client 1\n'))
                                 if not data:
                                         break
                                 data = json.loads(data)

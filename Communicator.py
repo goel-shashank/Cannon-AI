@@ -39,7 +39,7 @@ class Communicator(object):
 		success_flag = False
 		if(self.isSocketNotNone()):
 			try:
-				self.Socket.send(data.encode())
+				self.Socket.send(data)
 				success_flag = True
 			except Error:
 				pass
