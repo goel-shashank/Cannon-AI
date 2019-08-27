@@ -59,6 +59,7 @@ class Game:
 		self.driver.set_window_size(width = self.display + 10, height = self.display + 132.5)
 
 		self.timer = time
+		self.townhalls = 3
 		self.centerx = int(self.display) / 2
 		self.centery = int(self.display) / 2
 		self.spacing = float(self.display) / self.rows

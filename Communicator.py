@@ -5,14 +5,14 @@ from sys import platform
 import os
 
 class Communicator(object):
-	def __init__(self): 
+	def __init__(self):
 		self.Socket = None
-		self.ChildProcess = None		
+		self.ChildProcess = None
 
 	def setSocket(self,Socket,TIMEOUT=60):
-		self.Socket = Socket		
+		self.Socket = Socket
 		self.Socket.settimeout(TIMEOUT)
-		
+
 
 	def isSocketNotNone(self):
 		if(self.Socket is None):
@@ -25,11 +25,11 @@ class Communicator(object):
 			return False
 		else:
 			return True
-	
+
 	def closeSocket(self):
 		if(self.isSocketNotNone()):
 			# Try in case the connection is already closed by the other process
-			try:				
+			try:
 				self.Socket.close()
 			except:
 				pass
@@ -39,17 +39,17 @@ class Communicator(object):
 		success_flag = False
 		if(self.isSocketNotNone()):
 			try:
-				self.Socket.send(data)
+				self.Socket.send(data.encode())
 				success_flag = True
-			except:
+			except Error:
 				pass
 		return success_flag
 
 	def RecvDataOnSocket(self):
 		data = None
-		if(self.isSocketNotNone()):			
+		if(self.isSocketNotNone()):
 			while True:
-				try:			
+				try:
 					data = self.Socket.recv(1024)
 				except:
 					data = None
@@ -59,15 +59,15 @@ class Communicator(object):
 				elif(len(data) > 0):
 					break
 		return data
-		
 
-	def CreateChildProcess(self,Execution_Command,Executable_File):	
+
+	def CreateChildProcess(self,Execution_Command,Executable_File):
 		if platform == "darwin" or platform == "linux" or platform == "linux2":
-			self.ChildProcess = Popen ([Execution_Command, Executable_File], stdin = PIPE, stdout = PIPE, bufsize=0,preexec_fn=os.setsid)	
+			self.ChildProcess = Popen ([Execution_Command, Executable_File], stdin = PIPE, stdout = PIPE, bufsize=0,preexec_fn=os.setsid)
 		else:
 			self.ChildProcess = Popen ([Execution_Command, Executable_File], stdin = PIPE, stdout = PIPE, bufsize=0)
-		self.ModifiedOutStream = NBSR(self.ChildProcess.stdout)		
-		
+		self.ModifiedOutStream = NBSR(self.ChildProcess.stdout)
+
 
 	def RecvDataOnPipe(self,TIMEOUT):
 		data = None
@@ -77,7 +77,7 @@ class Communicator(object):
 			except:
 				pass
 		return data
-						
+
 	def SendDataOnPipe(self,data):
 		success_flag = False
 		if(self.isChildProcessNotNone()):
@@ -87,18 +87,18 @@ class Communicator(object):
 			except:
 				pass
 		return success_flag
-	
+
 	def closeChildProcess(self):
-		if(self.isChildProcessNotNone()):		
+		if(self.isChildProcessNotNone()):
 			if platform == "darwin" or platform == "linux" or platform == "linux2":
 				try:
 				 	os.killpg(os.getpgid(self.ChildProcess.pid), 15)
 				except:
 					pass
-			else:	
+			else:
 				self.ChildProcess.kill()
 			self.ChildProcess = None
-		
+
 
 if __name__ == '__main__':
 	c = Communicator()
@@ -107,15 +107,9 @@ if __name__ == '__main__':
 	try:
 		while(counter != 100):
 			c.SendDataOnPipe(str(counter) + '\n')
-			data = c.RecvDataOnPipe()		
-			print "Parent Recieved",data
+			data = c.RecvDataOnPipe()
+			print("Parent Recieved",data)
 			data = data.strip()
 			counter = int(data)
 	except:
 		c.closeChildProcess()
-
-	
-
-	
-	
-	
