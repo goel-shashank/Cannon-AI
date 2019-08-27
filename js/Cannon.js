@@ -175,23 +175,23 @@ function SelectSoldier(x, y)
 {
 		if(positions[x][y].piece == Math.pow(-1, current_player))
 		{
+				var executable = Guides(x, y, true);
+
+				if(executable == 0)
+						return false;
+
+				required_move = 1;
+				player[current_player].current_soldier = [x, y];
+
 				guide_ctx.beginPath();
 				guide_ctx.strokeStyle = "black";
 				guide_ctx.arc(positions[x][y].x, positions[x][y].y, spacing * 3 / 10, 0, Math.PI * 2);
-
 				var grd = guide_ctx.createRadialGradient(positions[x][y].x, positions[x][y].y, spacing * 3 / 20, positions[x][y].x, positions[x][y].y, spacing * 3 / 10);
-
 				grd.addColorStop(0, player[current_player].color);
 				grd.addColorStop(1, "#444444");
 				guide_ctx.fillStyle = grd;
 				guide_ctx.fill();
 				guide_ctx.stroke();
-
-				player[current_player].current_soldier = [x, y];
-
-				Guides(x, y, true);
-
-				required_move = 1;
 
 	      return true;
 		}
@@ -213,6 +213,8 @@ function sign(i)
 
 function Guides(x, y, guide)
 {
+		var executable = 0;
+
 		var check;
 		var tx, ty;
 
@@ -250,6 +252,7 @@ function Guides(x, y, guide)
 						guide_ctx.clearRect(corners[tx][ty].x, corners[tx][ty].y, spacing, spacing);
 						positions[tx][ty].guide = 0;
 				}
+				executable = 1;
 		}
 
 		// Backward
@@ -291,6 +294,7 @@ function Guides(x, y, guide)
 								guide_ctx.clearRect(corners[tx][ty].x, corners[tx][ty].y, spacing, spacing);
 								positions[tx][ty].guide = 0;
 						}
+						executable = 1;
 				}
 		}
 
@@ -340,6 +344,7 @@ function Guides(x, y, guide)
 														guide_ctx.clearRect(corners[tx][ty].x, corners[tx][ty].y, spacing, spacing);
 														positions[tx][ty].guide = 0;
 												}
+												executable = 1;
 										}
 								}
 
@@ -366,10 +371,13 @@ function Guides(x, y, guide)
 												guide_ctx.clearRect(corners[tx][ty].x, corners[tx][ty].y, spacing, spacing);
 												positions[tx][ty].guide = 0;
 										}
+										executable = 1;
 								}
 						}
 				}
 		}
+
+		return executable;
 }
 
 function MoveSoldier(x, y)
