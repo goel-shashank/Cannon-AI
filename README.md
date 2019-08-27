@@ -88,7 +88,7 @@ To throw a bomb, select any of the soldiers of a cannon, and throw it at any via
 `S 2 4 B 6 4`
 
 ### Replay
-A server.log file is created during a gameplay that consist the moves played in the game. You can simulate it using the following command:
+A server.log file is created during the gameplay that consist of the moves played in the game. You can simulate/re-run it using the following command:
 
 `python game.py server.log`
 
