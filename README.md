@@ -25,6 +25,14 @@ We will be having 3 TownHalls instead of 1 and that too fixed in position.
 
 `pip install -r requirements.txt`
 
+Download the chrome driver executable according to your chrome version from the following link:
+https://chromedriver.chromium.org/downloads
+
+You can check you chrome version following the steps below:
+- Launch Google Chrome.
+- Click on the icon in the upper right corner that looks like 3 short bars.
+- Select About Google Chrome to display the version number.
+
 ## Main Files
 + `game.py` - This has an instance of the game. It can be run locally to hand play a game of Cannon or re-play a recorded game. Should be run in `GUI` mode to make game board visible.
 + `RandomPlayer.py` - This is an implementation of a random bot. It is a good place to start understanding the flow of the game and the various game states.
@@ -78,6 +86,11 @@ To move a soldier from (1, 2) to (2, 4)
 To throw a bomb, select any of the soldiers of a cannon, and throw it at any viable target of the cannon(s) formed by that soldier.
 
 `S 2 4 B 6 4`
+
+### Replay
+A server.log file is created during a gameplay that consist the moves played in the game. You can simulate it using the following command:
+
+`python game.py server.log`
 
 ## Scoring
 At the end of a game both players will be given a score.
