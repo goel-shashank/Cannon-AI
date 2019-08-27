@@ -57,8 +57,8 @@ The game play consists of the players executing a sequence of moves in a single 
 A move is a triple: `type` `x` `y`.  
 
 ### Movetype
-+ S - Select a ring
-+ M - Move a ring
++ S - Select a soldier
++ M - Move a soldier
 + B - Throw a Bomb
 
 ### Board Settings
