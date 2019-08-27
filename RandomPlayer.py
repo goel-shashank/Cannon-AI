@@ -16,25 +16,25 @@ class RandomPlayer:
 		type = 'S'
 		valid_soldiers = self.game.getValidSoldiers()
 		i = random.randint(0, len(valid_soldiers) - 1)
-		x, y = valid_soldiers[i]
+		x, y = valid_soldiers[i]['x'], valid_soldiers[i]['y']
 		return '{type} {x} {y}'.format(type = type, x = x, y = y), type, x, y
 
 	def moveSoldier(self):
 		type = 'M'
 		valid_moves = self.game.getValidMoves()
 		if(len(valid_moves) == 0):
-			return -1, -1, -1, -1
+			return -1, -1, -1, 1
 		i = random.randint(0, len(valid_moves) - 1)
-		x, y = valid_moves[i]
+		x, y = valid_moves[i]['x'], valid_moves[i]['y']
 		return '{type} {x} {y}'.format(type = type, x = x, y = y), type, x, y
 
 	def throwBomb(self):
 		type = 'B'
 		valid_targets = self.game.getValidTargets()
 		if(len(valid_targets) == 0):
-			return -1, -1, -1, -1
+			return -1, -1, -1, 1
 		i = random.randint(0, len(valid_targets) - 1)
-		x, y = valid_targets[i]
+		x, y = valid_targets[i]['x'], valid_targets[i]['y']
 		return '{type} {x} {y}'.format(type = type, x = x, y = y), type, x, y
 
 	def play_move_seq(self, move_sequence):
@@ -60,8 +60,8 @@ class RandomPlayer:
 
 				if(state == 1):
 					while(1):
-						r = random.randint(0, 1)
-						if(r == 0):
+						r = random.randint(0, 10)
+						if(r < 10):
 							move, type, x, y = self.moveSoldier()
 						else:
 							move, type, x, y = self.throwBomb()

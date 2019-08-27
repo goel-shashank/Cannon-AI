@@ -36,8 +36,8 @@ var spacing = game_canvas.height / rows;
 var current_player = 0;
 
 var player = new Array(2);
-player[0] = {townhalls: 3, color: "#000000", current_soldier: [-1,-1]};
-player[1] = {townhalls: 3, color: "#ffffff", current_soldier: [-1,-1]};
+player[0] = {townhalls: 3, color: "#000000", current_soldier: [-1,-1], soldiers: []};
+player[1] = {townhalls: 3, color: "#ffffff", current_soldier: [-1,-1], soldiers: []};
 
 var is_valid = 0;
 var required_move = 0;
@@ -47,6 +47,12 @@ function SwitchPlayer()
 		current_player = 1 - current_player;
 }
 
+function Pair(x, y)
+{
+		this.x = x;
+		this.y = y;
+}
+
 function Point(x, y)
 {
 	  this.x = x;
@@ -54,6 +60,9 @@ function Point(x, y)
 	  this.piece = 0;
 	  this.guide = 0;
 }
+
+var guides_move = [];
+var guides_bomb = [];
 
 var positions = new Array(rows);
 for (var i = 0; i < rows; i++)
@@ -137,6 +146,8 @@ function PlaceSoldiers()
 						piece_ctx.lineWidth = 1;
 
 						positions[i][places[i % 2][j]].piece = Math.pow(-1, i % 2);
+						var pair = new Pair(i, places[i % 2][j]);
+						player[i % 2].soldiers.push(pair);
 				}
 		}
 }
@@ -175,6 +186,8 @@ function SelectSoldier(x, y)
 {
 		if(positions[x][y].piece == Math.pow(-1, current_player))
 		{
+				guides_move = [];
+				guides_bomb = [];
 				var executable = Guides(x, y, true);
 
 				if(executable == 0)
@@ -192,6 +205,8 @@ function SelectSoldier(x, y)
 				guide_ctx.fillStyle = grd;
 				guide_ctx.fill();
 				guide_ctx.stroke();
+
+
 
 	      return true;
 		}
@@ -246,6 +261,8 @@ function Guides(x, y, guide)
 						guide_ctx.fill();
 						guide_ctx.stroke();
 						positions[tx][ty].guide = 1;
+						var pair = new Pair(tx, ty);
+						guides_move.push(pair);
 				}
 				else
 				{
@@ -288,6 +305,8 @@ function Guides(x, y, guide)
 								guide_ctx.fill();
 								guide_ctx.stroke();
 								positions[tx][ty].guide = 1;
+								var pair = new Pair(tx, ty);
+								guides_move.push(pair);
 						}
 						else
 						{
@@ -338,6 +357,8 @@ function Guides(x, y, guide)
 														guide_ctx.fill();
 														guide_ctx.stroke();
 														positions[tx][ty].guide = 2;
+														var pair = new Pair(tx, ty);
+														guides_bomb.push(pair);
 												}
 												else
 												{
@@ -398,6 +419,17 @@ function MoveSoldier(x, y)
 						if(player[1 - current_player]['townhalls'] == 0)
 								required_move = 2;
 				}
+				else if(positions[x][y].piece == Math.pow(-1, current_player + 1))
+				{
+						for(var i = 0; i < player[1 - current_player].soldiers.length; i++)
+						{
+								if(x == player[1 - current_player].soldiers[i].x && y == player[current_player].soldiers[i].y)
+								{
+										player[current_player].soldiers.splice(i, 1);
+										break;
+								}
+						}
+				}
 
 				positions[x][y].piece = Math.pow(-1, current_player);
 				piece_ctx.clearRect(corners[x][y].x, corners[x][y].y, spacing, spacing);
@@ -407,6 +439,16 @@ function MoveSoldier(x, y)
 				piece_ctx.arc(positions[x][y].x, positions[x][y].y, spacing / 3.0, 0, 2 * Math.PI);
 				piece_ctx.stroke();
 				piece_ctx.lineWidth = 1;
+
+				for(var i = 0; i < player[current_player].soldiers.length; i++)
+				{
+						if(player[current_player].current_soldier[0] == player[current_player].soldiers[i].x && player[current_player].current_soldier[1] == player[current_player].soldiers[i].y)
+						{
+							 	player[current_player].soldiers[i].x = x;
+								player[current_player].soldiers[i].y = y;
+								break;
+						}
+				}
 
 				SwitchPlayer();
 				return true;
@@ -433,6 +475,18 @@ function ThrowBomb(x, y)
 						if(player[1 - current_player]['townhalls'] == 0)
 								required_move = 2;
 				}
+				else if(positions[x][y].piece == Math.pow(-1, current_player + 1))
+				{
+						for(var i = 0; i < player[1 - current_player].soldiers.length; i++)
+						{
+								if(x == player[1 - current_player].soldiers[i].x && y == player[current_player].soldiers[i].y)
+								{
+										player[current_player].soldiers.splice(i, 1);
+										break;
+								}
+						}
+				}
+
 				positions[x][y].piece = 0;
 				piece_ctx.clearRect(corners[x][y].x, corners[x][y].y, spacing, spacing);
 
