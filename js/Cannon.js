@@ -36,8 +36,8 @@ var spacing = game_canvas.height / rows;
 var current_player = 0;
 
 var player = new Array(2);
-player[0] = {board_townhalls: 0, townhalls_won: 0, color: "#000000", current_soldier: [-1,-1]};
-player[1] = {board_townhalls: 0, townhalls_won: 0, color: "#ffffff", current_soldier: [-1,-1]};
+player[0] = {townhalls: 3, color: "#000000", current_soldier: [-1,-1]};
+player[1] = {townhalls: 3, color: "#ffffff", current_soldier: [-1,-1]};
 
 var is_valid = 0;
 var required_move = 0;
@@ -154,7 +154,7 @@ function PlaceTownHalls()
 		for(var i = 0; i < 3; i++)
 		{
 				piece_ctx.fillRect(corners[rows - 1 - i * townspace][0].x + 10, corners[rows - 1 - i * townspace][0].y + 10, spacing - 20, spacing - 20);
-				positions[rows - 1 - i * townspace][rows - 1 - i * townspace].piece = -2;
+				positions[rows - 1 - i * townspace][0].piece = -2;
 		}
 }
 
@@ -175,7 +175,6 @@ function SelectSoldier(x, y)
 {
 		if(positions[x][y].piece == Math.pow(-1, current_player))
 		{
-				console.log("sorry");
 				guide_ctx.beginPath();
 				guide_ctx.strokeStyle = "black";
 				guide_ctx.arc(positions[x][y].x, positions[x][y].y, spacing * 3 / 10, 0, Math.PI * 2);
@@ -218,6 +217,7 @@ function Guides(x, y, guide)
 		var tx, ty;
 
 		var dx, dy;
+		var cdx, cdy;
 		var adjx, adjy;
 		var bombx, bomby;
 		var soldierx, soldiery;
@@ -256,9 +256,14 @@ function Guides(x, y, guide)
 		check = 0;
 		adjx = [-1, -1, 0, 1, 1];
 		adjy = [0, -1, -1, -1, 0];
-		for(var j = 0; j < adjx.length && check == 0; j++)
-				if(positions[x + adjx[j]][y + adjy[j] * direction].piece == Math.pow(-1, current_player + 1))
+		for(var i = 0; i < adjx.length && check == 0; i++)
+		{
+				tx = x + adjx[i];
+				ty = y + adjy[i] * direction;
+
+				if(isInBoard(tx, ty) && positions[tx][ty].piece == Math.pow(-1, current_player + 1))
 						check = 1;
+		}
 		dx = [-1, 0, 1];
 		dy = [2, 2, 2];
 		if(check)
@@ -292,6 +297,8 @@ function Guides(x, y, guide)
 		// Cannon
 		dx = [[[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], [[-3, -2, 4, 5], [-4, -3, 3, 4], [-5, -4, 2, 3]], [[-3, -2, 4, 5], [-4, -3, 3, 4], [-5, -4, 2, 3]], [[-3, -2, 4, 5], [-4, -3, 3, 4], [-5, -4, 2, 3]]];
 		dy = [[[-3, -2, 4, 5], [-4, -3, 3, 4], [-5, -4, 2, 3]], [[-3, -2, 4, 5], [-4, -3, 3, 4], [-5, -4, 2, 3]], [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], [[3, 2, -4, -5], [4, 3, -3, -4], [5, 4, -2, -3]]];
+		cdx = [[[0], [], [0]], [[3], [], [-3]], [[3], [], [-3]], [[3], [], [-3]]];
+		cdy = [[[3], [], [-3]], [[3], [], [-3]], [[0], [], [0]], [[-3], [], [3]]];
 		soldierx = [[[0, 0], [0, 0], [0, 0]], [[1, 2], [-1, 1], [-2, -1]], [[1, 2], [-1, 1], [-2, -1]], [[1, 2], [-1, 1], [-2, -1]]];
 		soldiery = [[[1, 2], [-1, 1], [-2, -1]], [[1, 2], [-1, 1], [-2, -1]], [[0, 0], [0, 0], [0, 0]], [[-2, -1], [-1, 1], [1, 2]]];
 
@@ -309,7 +316,7 @@ function Guides(x, y, guide)
 										check = 0;
 						}
 
-						if(check == 1)
+						if(check)
 						{
 								for(var k = 0; k < dx[0][0].length; k++)
 								{
@@ -320,9 +327,6 @@ function Guides(x, y, guide)
 										{
 												if(guide)
 												{
-														console.log(i);
-														console.log(j);
-														console.log(k);
 														guide_ctx.beginPath();
 														guide_ctx.strokeStyle = "#8b0000";
 														guide_ctx.arc(positions[tx][ty].x, positions[tx][ty].y, spacing / 8, 0, Math.PI * 2);
@@ -338,6 +342,31 @@ function Guides(x, y, guide)
 												}
 										}
 								}
+
+								for(var k = 0; k < cdx[0][0].length; k++)
+								{
+										tx = x + cdx[i][j][k];
+										ty = y + cdy[i][j][k] * direction;
+
+										if(!isInBoard(tx, ty) || sign(positions[tx][ty].piece) == Math.pow(-1, current_player))
+												continue;
+
+										if(guide)
+										{
+												guide_ctx.beginPath();
+												guide_ctx.strokeStyle = "#35230a";
+												guide_ctx.arc(positions[tx][ty].x, positions[tx][ty].y, spacing / 8, 0, Math.PI * 2);
+												guide_ctx.fillStyle = "#35230a";
+												guide_ctx.fill();
+												guide_ctx.stroke();
+												positions[tx][ty].guide = 1;
+										}
+										else
+										{
+												guide_ctx.clearRect(corners[tx][ty].x, corners[tx][ty].y, spacing, spacing);
+												positions[tx][ty].guide = 0;
+										}
+								}
 						}
 				}
 		}
@@ -347,10 +376,20 @@ function MoveSoldier(x, y)
 {
 		if(positions[x][y].guide == 1)
 		{
+				required_move = 0;
+
 				var p = corners[player[current_player].current_soldier[0]][player[current_player].current_soldier[1]];
 				guide_ctx.clearRect(p.x, p.y, spacing, spacing);
 				piece_ctx.clearRect(p.x, p.y, spacing, spacing);
+				positions[player[current_player].current_soldier[0]][player[current_player].current_soldier[1]].piece = 0;
 				Guides(player[current_player].current_soldier[0], player[current_player].current_soldier[1], false);
+
+				if(positions[x][y].piece == Math.pow(-1, current_player + 1) * 2)
+				{
+						player[1 - current_player]['townhalls'] -= 1;
+						if(player[1 - current_player]['townhalls'] == 0)
+								required_move = 2;
+				}
 
 				positions[x][y].piece = Math.pow(-1, current_player);
 				piece_ctx.clearRect(corners[x][y].x, corners[x][y].y, spacing, spacing);
@@ -362,7 +401,6 @@ function MoveSoldier(x, y)
 				piece_ctx.lineWidth = 1;
 
 				SwitchPlayer();
-				required_move = 0;
 				return true;
 		}
 		else
@@ -375,15 +413,22 @@ function ThrowBomb(x, y)
 {
 		if(positions[x][y].guide == 2)
 		{
+				required_move = 0;
+
 				var p = corners[player[current_player].current_soldier[0]][player[current_player].current_soldier[1]];
 				guide_ctx.clearRect(p.x, p.y, spacing, spacing);
 				Guides(player[current_player].current_soldier[0], player[current_player].current_soldier[1], false);
 
+				if(positions[x][y].piece == Math.pow(-1, current_player + 1) * 2)
+				{
+						player[1 - current_player]['townhalls'] -= 1;
+						if(player[1 - current_player]['townhalls'] == 0)
+								required_move = 2;
+				}
 				positions[x][y].piece = 0;
 				piece_ctx.clearRect(corners[x][y].x, corners[x][y].y, spacing, spacing);
 
 				SwitchPlayer();
-				required_move = 0;
 				return true;
 		}
 		else
@@ -402,16 +447,19 @@ function IsClickValid(mouse)
 				{
 						if(positions[i][j].x - spacing / 2 < mouse.x && positions[i][j].x + spacing / 2 > mouse.x && positions[i][j].y-spacing / 2 < mouse.y && positions[i][j].y + spacing / 2 > mouse.y)
 						{
-              	valid = false
+              	valid = false;
 								if(required_move == 0)
 								{
 										valid = SelectSoldier(i, j);
 								}
 								else if(required_move == 1)
 								{
-										valid = MoveSoldier(i, j) || ThrowBomb(i, j);
+										if(positions[i][j].guide == 1)
+												valid = MoveSoldier(i, j);
+										else if(positions[i][j].guide == 2)
+												valid = ThrowBomb(i, j);
 								}
-								is_valid = valid
+								is_valid = valid;
 						}
 				}
 		}

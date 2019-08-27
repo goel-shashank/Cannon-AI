@@ -149,7 +149,7 @@ class Game:
 
 	def check_finished(self):
 		required_move = self.driver.execute_script('return required_move;')
-		return (required_move == 3)
+		return (required_move == 2)
 
 	def sign(self, x):
 		if(x == 0):
@@ -206,7 +206,7 @@ class Game:
 			string_valid = 0
 
 		move_valid = self.check_move_validity()
-		finished = self.check_won()
+		finished = self.check_finished()
 
 		if(not (string_valid and move_valid)):
 			success = 0
