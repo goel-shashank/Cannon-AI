@@ -216,6 +216,15 @@ function SelectSoldier(x, y)
 	  }
 }
 
+function DeSelectSoldier()
+{
+		var p = corners[player[current_player].current_soldier[0]][player[current_player].current_soldier[1]];
+		guide_ctx.clearRect(p.x, p.y, spacing, spacing);
+		Guides(player[current_player].current_soldier[0], player[current_player].current_soldier[1], false);
+
+		required_move = 0;
+}
+
 function sign(i)
 {
 		if(i > 0)
@@ -230,6 +239,7 @@ function Guides(x, y, guide)
 {
 		var executable = 0;
 
+		var s;
 		var check;
 		var tx, ty;
 
@@ -320,79 +330,90 @@ function Guides(x, y, guide)
 		// Cannon
 		dx = [[[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], [[-3, -2, 4, 5], [-4, -3, 3, 4], [-5, -4, 2, 3]], [[-3, -2, 4, 5], [-4, -3, 3, 4], [-5, -4, 2, 3]], [[-3, -2, 4, 5], [-4, -3, 3, 4], [-5, -4, 2, 3]]];
 		dy = [[[-3, -2, 4, 5], [-4, -3, 3, 4], [-5, -4, 2, 3]], [[-3, -2, 4, 5], [-4, -3, 3, 4], [-5, -4, 2, 3]], [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]], [[3, 2, -4, -5], [4, 3, -3, -4], [5, 4, -2, -3]]];
+		valid_dx = [[[0, 0], [0, 0], [0, 0]], [[-1, 3], [-2, 2], [-3, 1]], [[-1, 3], [-2, 2], [-3, 1]], [[-1, 3], [-2, 2], [-3, 1]]];
+		valid_dy = [[[-1, 3], [-2, 2], [-3, 1]], [[-1, 3], [-2, 2], [-3, 1]], [[0, 0], [0, 0], [0, 0]], [[1, -3], [2, -2], [3, -1]]];
 		cdx = [[[0], [], [0]], [[3], [], [-3]], [[3], [], [-3]], [[3], [], [-3]]];
 		cdy = [[[3], [], [-3]], [[3], [], [-3]], [[0], [], [0]], [[-3], [], [3]]];
 		soldierx = [[[0, 0], [0, 0], [0, 0]], [[1, 2], [-1, 1], [-2, -1]], [[1, 2], [-1, 1], [-2, -1]], [[1, 2], [-1, 1], [-2, -1]]];
-		soldiery = [[[1, 2], [-1, 1], [-2, -1]], [[1, 2], [-1, 1], [-2, -1]], [[0, 0], [0, 0], [0, 0]], [[-2, -1], [-1, 1], [1, 2]]];
+		soldiery = [[[1, 2], [-1, 1], [-2, -1]], [[1, 2], [-1, 1], [-2, -1]], [[0, 0], [0, 0], [0, 0]], [[-1, -2], [1, -1], [2, 1]]];
 
 		for(var i = 0; i < dx.length; i++)
 		{
 				for(var j = 0; j < dx[0].length; j++)
 				{
 						check = 1;
-						for(var k = 0; k < soldierx[0][0].length; k++)
-						{
-								tx = x + soldierx[i][j][k];
-								ty = y + soldiery[i][j][k] * direction;
 
-								if(!isInBoard(tx, ty) || positions[tx][ty].piece != Math.pow(-1, current_player))
-										check = 0;
-						}
-
-						if(check)
+						s = [[x + valid_dx[i][j][0], y + valid_dy[i][j][0] * direction], [x + valid_dx[i][j][1], y + valid_dy[i][j][1] * direction]];
+						if((isInBoard(s[0][0], s[0][1]) && (positions[s[0][0]][s[0][1]].piece == 0)) || (isInBoard(s[1][0], s[1][1]) && (positions[s[1][0]][s[1][1]].piece == 0)))
 						{
-								for(var k = 0; k < dx[0][0].length; k++)
+								for(var k = 0; k < soldierx[0][0].length; k++)
 								{
-										tx = x + dx[i][j][k];
-										ty = y + dy[i][j][k] * direction;
+										tx = x + soldierx[i][j][k];
+										ty = y + soldiery[i][j][k] * direction;
 
-										if(isInBoard(tx, ty) && sign(positions[tx][ty].piece) != Math.pow(-1, current_player))
+										if(!isInBoard(tx, ty) || positions[tx][ty].piece != Math.pow(-1, current_player))
+												check = 0;
+								}
+
+								if(check)
+								{
+										for(var k = 0; k < dx[0][0].length; k++)
 										{
+												if((isInBoard(s[Math.floor(k / 2)][0], s[Math.floor(k / 2)][1]) && (positions[s[Math.floor(k / 2)][0]][s[Math.floor(k / 2)][1]].piece == 0)))
+												{
+														tx = x + dx[i][j][k];
+														ty = y + dy[i][j][k] * direction;
+
+														if(isInBoard(tx, ty) && sign(positions[tx][ty].piece) != Math.pow(-1, current_player))
+														{
+																if(guide)
+																{
+																		guide_ctx.beginPath();
+																		guide_ctx.strokeStyle = "#8b0000";
+																		guide_ctx.arc(positions[tx][ty].x, positions[tx][ty].y, spacing / 8, 0, Math.PI * 2);
+																		guide_ctx.fillStyle = "#8b0000";
+																		guide_ctx.fill();
+																		guide_ctx.stroke();
+																		positions[tx][ty].guide = 2;
+																		var pair = new Pair(tx, ty);
+																		guides_bomb.push(pair);
+																}
+																else
+																{
+																		guide_ctx.clearRect(corners[tx][ty].x, corners[tx][ty].y, spacing, spacing);
+																		positions[tx][ty].guide = 0;
+																}
+																executable = 1;
+														}
+												}
+										}
+
+										for(var k = 0; k < cdx[0][0].length; k++)
+										{
+												tx = x + cdx[i][j][k];
+												ty = y + cdy[i][j][k] * direction;
+
+												if(!isInBoard(tx, ty) || sign(positions[tx][ty].piece) == Math.pow(-1, current_player))
+														continue;
+
 												if(guide)
 												{
 														guide_ctx.beginPath();
-														guide_ctx.strokeStyle = "#8b0000";
+														guide_ctx.strokeStyle = "#35230a";
 														guide_ctx.arc(positions[tx][ty].x, positions[tx][ty].y, spacing / 8, 0, Math.PI * 2);
-														guide_ctx.fillStyle = "#8b0000";
+														guide_ctx.fillStyle = "#35230a";
 														guide_ctx.fill();
 														guide_ctx.stroke();
-														positions[tx][ty].guide = 2;
-														var pair = new Pair(tx, ty);
-														guides_bomb.push(pair);
+														positions[tx][ty].guide = 1;
 												}
 												else
 												{
 														guide_ctx.clearRect(corners[tx][ty].x, corners[tx][ty].y, spacing, spacing);
 														positions[tx][ty].guide = 0;
 												}
+
 												executable = 1;
 										}
-								}
-
-								for(var k = 0; k < cdx[0][0].length; k++)
-								{
-										tx = x + cdx[i][j][k];
-										ty = y + cdy[i][j][k] * direction;
-
-										if(!isInBoard(tx, ty) || sign(positions[tx][ty].piece) == Math.pow(-1, current_player))
-												continue;
-
-										if(guide)
-										{
-												guide_ctx.beginPath();
-												guide_ctx.strokeStyle = "#35230a";
-												guide_ctx.arc(positions[tx][ty].x, positions[tx][ty].y, spacing / 8, 0, Math.PI * 2);
-												guide_ctx.fillStyle = "#35230a";
-												guide_ctx.fill();
-												guide_ctx.stroke();
-												positions[tx][ty].guide = 1;
-										}
-										else
-										{
-												guide_ctx.clearRect(corners[tx][ty].x, corners[tx][ty].y, spacing, spacing);
-												positions[tx][ty].guide = 0;
-										}
-										executable = 1;
 								}
 						}
 				}
@@ -510,16 +531,19 @@ function IsClickValid(mouse)
 						if(positions[i][j].x - spacing / 2 < mouse.x && positions[i][j].x + spacing / 2 > mouse.x && positions[i][j].y-spacing / 2 < mouse.y && positions[i][j].y + spacing / 2 > mouse.y)
 						{
               	valid = false;
-								if(required_move == 0)
+								if(positions[i][j].piece == 1 - 2 * current_player)
 								{
+										if(required_move == 1)
+												valid = DeSelectSoldier();
 										valid = SelectSoldier(i, j);
 								}
-								else if(required_move == 1)
+								if(positions[i][j].guide == 1)
 								{
-										if(positions[i][j].guide == 1)
-												valid = MoveSoldier(i, j);
-										else if(positions[i][j].guide == 2)
-												valid = ThrowBomb(i, j);
+										valid = MoveSoldier(i, j);
+								}
+								if(positions[i][j].guide == 2)
+								{
+										valid = ThrowBomb(i, j);
 								}
 								is_valid = valid;
 						}
