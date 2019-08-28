@@ -222,7 +222,8 @@ class Game:
 
 	def simulate(self, filename):
 		with open(filename) as f:
-			for line in f.readlines():
+			lines = [line for line in f.readlines()]
+			for line in lines[:-2]:
 				parts = line.split('}')
 				part = parts[0] + '}'
 				out = json.loads(part)
