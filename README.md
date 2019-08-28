@@ -13,7 +13,7 @@ The assignment documentation can be found [here]()
 
 ## Rules
 The rules of the game can be found [here](https://nestorgames.com/rulebooks/CANNON_EN.pdf)
-We will be having three TownHalls instead of 1 and that too fixed in position.
+We will be having 3 TownHalls instead of 1 and that too fixed in position.
 
 ## Dependencies
 + Python2.7
@@ -24,6 +24,14 @@ We will be having three TownHalls instead of 1 and that too fixed in position.
 + Selenium
 
 `pip install -r requirements.txt`
+
+Download the chrome driver executable according to your chrome version from the following link:
+https://chromedriver.chromium.org/downloads
+
+You can check you chrome version following the steps below:
+- Launch Google Chrome.
+- Click on the icon in the upper right corner that looks like 3 short bars.
+- Select About Google Chrome to display the version number.
 
 ## Main Files
 + `game.py` - This has an instance of the game. It can be run locally to hand play a game of Cannon or re-play a recorded game. Should be run in `GUI` mode to make game board visible.
@@ -46,10 +54,12 @@ Here are the sample instructions used to match two random players against each o
 ### Setup Server
 `python server.py 10000 -n 10 -NC 2 -TL 150 -LOG server.log`
 ### Setup Client 1
-`export PATH=$PATH:'/home/chrome_driver_directory`
+`export PATH=$PATH:'/home/chrome_driver_directory'`
+
 `python client.py 0.0.0.0 10000 RandomPlayer.py -mode GUI`
 ### Setup Client 2
-`export PATH=$PATH:'/home/chrome_driver_directory`
+`export PATH=$PATH:'/home/chrome_driver_directory'`
+
 `python client.py 0.0.0.0 10000 RandomPlayer.py`
 
 ## Gameplay
@@ -57,8 +67,8 @@ The game play consists of the players executing a sequence of moves in a single 
 A move is a triple: `type` `x` `y`.  
 
 ### Movetype
-+ S - Select a ring
-+ M - Move a ring
++ S - Select a soldier
++ M - Move a soldier
 + B - Throw a Bomb
 
 ### Board Settings
@@ -69,11 +79,18 @@ The vertical direction towards up is the positive y-axis.
 
 #### Moving a Soldier
 To move a soldier from (1, 2) to (2, 4)
+
 `S 1 2 M 2 4`
 
 #### Throwing a Bomb
 To throw a bomb, select any of the soldiers of a cannon, and throw it at any viable target of the cannon(s) formed by that soldier.
+
 `S 2 4 B 6 4`
+
+### Replay
+A server.log file is created during the gameplay that consist of the moves played in the game. You can simulate/re-run it using the following command:
+
+`python game.py server.log`
 
 ## Scoring
 At the end of a game both players will be given a score.

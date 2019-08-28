@@ -83,7 +83,10 @@ class Client(Communicator):
 				None
 		"""
 		self.clientSocket = socket.socket()
-		self.clientSocket.connect((server_address,port_no))
+		try:
+			self.clientSocket.connect((server_address,port_no))
+		except:
+			pass
 		super(Client,self).setSocket(self.clientSocket,self.NETWORK_TIMER)
 
 	def SendData2Server(self,data):
