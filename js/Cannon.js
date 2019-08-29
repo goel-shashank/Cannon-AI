@@ -239,6 +239,7 @@ function Guides(x, y, guide)
 {
 		var executable = 0;
 
+		var b;
 		var s;
 		var check;
 		var tx, ty;
@@ -252,14 +253,16 @@ function Guides(x, y, guide)
 		direction = 1 - current_player * 2;
 
 		// Forward
-		dx = [-1, 0, 1];
-		dy = [-1, -1, -1];
+		b = [1, 1, 1, 0, 0];
+		dx = [-1, 0, 1, -1, 1];
+		dy = [-1, -1, -1, 0, 0];
 		for (var i = 0; i < dx.length; i++)
 		{
 				tx = x + dx[i];
 				ty = y + dy[i] * direction;
-
-				if(!isInBoard(tx, ty) || sign(positions[tx][ty].piece) == Math.pow(-1, current_player))
+				console.log(sign(positions[tx][ty].piece));
+				console.log(Math.pow(-1, current_player + 1));
+				if(!isInBoard(tx, ty) || (sign(positions[tx][ty].piece) == Math.pow(-1, current_player)) || (b[i] == 0 && sign(positions[tx][ty].piece) != Math.pow(-1, current_player + 1)))
 						continue;
 
 				if(guide)
@@ -296,6 +299,7 @@ function Guides(x, y, guide)
 		}
 		dx = [-1, 0, 1];
 		dy = [2, 2, 2];
+
 		if(check)
 		{
 				for (var i = 0; i < dx.length; i++)
