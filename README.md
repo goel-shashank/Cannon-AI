@@ -13,7 +13,7 @@ The assignment documentation can be found [here]()
 
 ## Rules
 The rules of the game can be found [here](https://nestorgames.com/rulebooks/CANNON_EN.pdf)
-We will be having 3 TownHalls instead of 1 and that too fixed in position.
+We will be having an 8x8 board and 4 Town Halls instead of 1. The position of the Town Halls is fixed.
 
 ## Dependencies
 + Python2.7
@@ -44,7 +44,7 @@ You can check you chrome version following the steps below:
 + `server.py` - This connects the clients and manages the transfer of information.
   > `port` (mandatory) - The Server Port.  
   > `ip` (optional) - The Server IP. Default: 0.0.0.0   
-  > `n` (optional) - The Board Size. Default: 10  
+  > `n` (optional) - The Board Size. Default: 8  
   > `NC` (optional) - Number of Clients. Default: 2  
   > `TL` (optional) - Time Limit. Default:150  
   > `LOG` (optional) - The Log File.  
@@ -52,7 +52,7 @@ You can check you chrome version following the steps below:
 ## Run Instructions
 Here are the sample instructions used to match two random players against each other over the server network.
 ### Setup Server
-`python server.py 10000 -n 10 -NC 2 -TL 150 -LOG server.log`
+`python server.py 10000 -n 8 -NC 2 -TL 150 -LOG server.log`
 ### Setup Client 1
 `export PATH=$PATH:'/home/chrome_driver_directory'`
 
@@ -100,21 +100,14 @@ This score will be based on the extent of victory. It is calculated as follows:
 
 | Your Town Halls Remaining | Opponent's Town Halls Remaining | Town Hall Margin Score |  
 | ------------- | ------------- | ------------- |
-| 3 | 0 | 10 |  
-| 3 | 1 | 9 |  
+| 4 | 2 | 10 |  
 | 3 | 2 | 8 |  
-| 2 | 0 | 7 |  
-| 2 | 1 | 6 |  
-| 1 | 0 | 6 |  
+| 4 | 3 | 7 |  
+| 4 | 4 | 5 |  
 | 3 | 3 | 5 |  
-| 2 | 2 | 5 |  
-| 1 | 1 | 5 |  
-| 0 | 1 | 4 |  
-| 1 | 2 | 4 |  
-| 0 | 2 | 3 |  
+| 3 | 4 | 3 |  
 | 2 | 3 | 2 |  
-| 1 | 3 | 1 |  
-| 0 | 3 | 0 |  
+| 2 | 4 | 0 |
 
 ### The Army Margin
 This score directly depends on the number of soldiers you have left at the end of the game. It is calculated as follows:  
@@ -124,8 +117,8 @@ This score directly depends on the number of soldiers you have left at the end o
 The final score is simply: `(Town Hall Margin Score).(Army Margin Score)`
 Example. Assume the following:  
 Player 1 has 3 Town Halls remaining and has 12 soldiers left on the board.  
-Player 2 has 1 Town Hall remaining and has 11 soldiers left on the board.  
-Player 1 score will be: **9.12**  
-Player 2 score will be: **1.11**  
+Player 2 has 2 Town Hall remaining and has 9 soldiers left on the board.  
+Player 1 score will be: **8.12**  
+Player 2 score will be: **2.09**  
 
-Note) In case a player suffers a TIMEOUT or INVALID move, he/she will automatically lose the gane and it will count as a (*x*-3) defeat towards the player and a (3-*x*) win for the opponent, where *x* is the number of Town Halls remaining with the player.
+Note) In case a player suffers a TIMEOUT or INVALID move, he/she will automatically lose the gane and it will count as a (2-*x*) defeat towards the player and a (*x*-2) win for the opponent, where *x* is the number of Town Halls remaining with the opponent.
