@@ -1,3 +1,4 @@
+
 from game import Game
 import random
 import sys
@@ -23,7 +24,7 @@ class RandomPlayer:
 		type = 'M'
 		valid_moves = self.game.getValidMoves()
 		if(len(valid_moves) == 0):
-			return -1, -1, -1, 1
+			return -1, -1, -1, -1
 		i = random.randint(0, len(valid_moves) - 1)
 		x, y = valid_moves[i]['x'], valid_moves[i]['y']
 		return '{type} {x} {y}'.format(type = type, x = x, y = y), type, x, y
@@ -32,7 +33,7 @@ class RandomPlayer:
 		type = 'B'
 		valid_targets = self.game.getValidTargets()
 		if(len(valid_targets) == 0):
-			return -1, -1, -1, 1
+			return -1, -1, -1, -1
 		i = random.randint(0, len(valid_targets) - 1)
 		x, y = valid_targets[i]['x'], valid_targets[i]['y']
 		return '{type} {x} {y}'.format(type = type, x = x, y = y), type, x, y
@@ -54,13 +55,14 @@ class RandomPlayer:
 				if(state == 0):
 					move, type, x, y = self.selectSoldier()
 					success = self.game.execute_move(move)
-					move_sequence.append(move)
-					state = 1
+					if(success != 0):
+						move_sequence.append(move)
+						state = 1
 
 				if(state == 1):
 					while(1):
-						r = random.randint(0, 15)
-						if(r < 15):
+						r = random.randint(0, 10)
+						if(r < 10):
 							move, type, x, y = self.moveSoldier()
 						else:
 							move, type, x, y = self.throwBomb()
@@ -68,8 +70,9 @@ class RandomPlayer:
 							break
 
 					success = self.game.execute_move(move)
-					move_sequence.append(move)
-					break
+					if(success != 0):
+						move_sequence.append(move)
+						break
 
 			self.play_move_seq(move_sequence)
 
