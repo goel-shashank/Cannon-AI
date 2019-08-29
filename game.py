@@ -43,7 +43,7 @@ class Game:
 			self.townspace = townspace_sizes[n]
 			self.contingent = contingent_sizes[n]
 		else:
-			raise AssertionError("Board size must be 10")
+			raise AssertionError("Board size must be 8")
 
 		# setup Driver
 		create_index_html(self.rows, self.display, self.townspace, self.contingent)
@@ -151,10 +151,6 @@ class Game:
 		required_move = self.driver.execute_script('return required_move;')
 		return (required_move == 2)
 
-	def check_end(self):
-		required_move = self.driver.execute_script('return check_end();')
-		return (required_move == 2)
-
 	def sign(self, x):
 		if(x == 0):
 			return 0
@@ -212,7 +208,7 @@ class Game:
 			string_valid = 0
 
 		move_valid = self.check_move_validity()
-		finished = self.check_finished() || self.check_end()
+		finished = self.check_finished()
 
 		if(not (string_valid and move_valid)):
 			success = 0

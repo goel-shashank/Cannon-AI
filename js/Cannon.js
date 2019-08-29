@@ -406,6 +406,8 @@ function Guides(x, y, guide)
 														guide_ctx.fill();
 														guide_ctx.stroke();
 														positions[tx][ty].guide = 1;
+														var pair = new Pair(tx, ty);
+														guides_move.push(pair);
 												}
 												else
 												{
@@ -473,6 +475,7 @@ function MoveSoldier(x, y)
 				}
 
 				SwitchPlayer();
+				check_end();
 				return true;
 		}
 		else
@@ -513,6 +516,7 @@ function ThrowBomb(x, y)
 				piece_ctx.clearRect(corners[x][y].x, corners[x][y].y, spacing, spacing);
 
 				SwitchPlayer();
+				check_end();
 				return true;
 		}
 		else
@@ -523,17 +527,17 @@ function ThrowBomb(x, y)
 
 function check_end()
 {
-		for(var i = 0; i < player[current_player].soldier.length; i++)
-		{
-				var x = player[current_player].soldier[i].x;
-				var y = player[current_player].soldier[i].y;
-
-				SelectSoldier(x, y);
-				DeSelectSoldier();
-				if(len(guides_move) != 0)
-						return;
-		}
-		required_move = 2;
+		// for(var i = 0; i < player[current_player].soldiers.length; i++)
+		// {
+		// 		var x = player[current_player].soldiers[i].x;
+		// 		var y = player[current_player].soldiers[i].y;
+		//
+		// 		SelectSoldier(x, y);
+		// 		DeSelectSoldier();
+		// 		if(guides_move.length != 0 || guides_bomb.length != 0)
+		// 				return;
+		// }
+		// required_move = 2;
 		return;
 }
 
