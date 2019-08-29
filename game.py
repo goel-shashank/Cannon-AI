@@ -13,9 +13,9 @@ from selenium import webdriver
 from jinja2 import Environment, FileSystemLoader
 from selenium.webdriver.chrome.options import Options
 
-display_sizes = {10: 750}
-townspace_sizes = {10: 3}
-contingent_sizes = {10: 3}
+display_sizes = {8: 600}
+townspace_sizes = {8: 2}
+contingent_sizes = {8: 3}
 
 PATH = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE_ENVIRONMENT = Environment(autoescape = False, loader = FileSystemLoader(os.path.join(PATH, 'templates')), trim_blocks = False)
@@ -59,7 +59,7 @@ class Game:
 		self.driver.set_window_size(width = self.display + 10, height = self.display + 132.5)
 
 		self.timer = time
-		self.townhalls = 3
+		self.townhalls = 4
 		self.spacing = float(self.display) / self.rows
 
 	def click_at(self, x, y) :
@@ -92,36 +92,31 @@ class Game:
 
 	def calculate_score(self, tA, tB, sA, sB, error_state):
 		if(error_state == '1'):
-			tB = 3
+			tA = 2
 		elif(error_state == '2'):
-			tA = 3
+			tB = 2
 
-		if(tB == 5):
-			tB = 0
-		if(tA == 5):
-			tA = 0
-
-		if(tA == 3):
-			scoreA = 10 - tB
-			scoreB = tB
-		elif(tB == 3):
-			scoreA = tA
-			scoreB = 10 - tA
-		elif(tB == tA):
+		if(tA == 4 and tB == 2):
+			scoreA = 10
+			scoreB = 0
+		elif(tA == 3 and tB == 2):
+			scoreA = 8
+			scoreB = 2
+		elif(tA == 2 and tB == 3):
+			scoreA = 2
+			scoreB = 8
+		elif(tA == 2 and tB == 4):
+			scoreA = 0
+			scoreB = 10
+		elif(tA == tB):
 			scoreA = 5
 			scoreB = 5
-		elif(tA - tB == 2):
+		elif(tA > tB):
 			scoreA = 7
 			scoreB = 3
-		elif(tB - tA == 2):
+		elif(tA < tB):
 			scoreA = 3
 			scoreB = 7
-		elif(tA > tB):
-			scoreA = 6
-			scoreB = 4
-		elif(tB > tA):
-			scoreA = 4
-			scoreB = 6
 		else:
 			AssertionError('cannot calculate score')
 
@@ -150,10 +145,14 @@ class Game:
 				elif(piece == -2):
 					townhallsB += 1
 
-		return self.calculate_score(self.townhalls - townhallsA, self.townhalls - townhallsB, soldiersA, soldiersB, error_state)[int(id) - 1]
+		return self.calculate_score(townhallsA, townhallsB, soldiersA, soldiersB, error_state)[int(id) - 1]
 
 	def check_finished(self):
 		required_move = self.driver.execute_script('return required_move;')
+		return (required_move == 2)
+
+	def check_end(self):
+		required_move = self.driver.execute_script('return check_end();')
 		return (required_move == 2)
 
 	def sign(self, x):
@@ -201,17 +200,19 @@ class Game:
 		success = 1
 		string_valid = 1
 
+		positions = list(self.driver.execute_script('return positions;'))
+
 		if(type == 'S'):
 			self.click_at(x, y)
-		elif(type == 'M'):
+		elif(type == 'M' and dict(positions[x][y])['guide'] == 1):
 			self.click_at(x, y)
-		elif(type == 'B'):
+		elif(type == 'B' and dict(positions[x][y])['guide'] == 2):
 			self.click_at(x, y)
 		else:
 			string_valid = 0
 
 		move_valid = self.check_move_validity()
-		finished = self.check_finished()
+		finished = self.check_finished() || self.check_end()
 
 		if(not (string_valid and move_valid)):
 			success = 0
@@ -223,12 +224,12 @@ class Game:
 	def simulate(self, filename):
 		with open(filename) as f:
 			lines = [line for line in f.readlines()]
-			for line in lines[:-2]:
+			for line in lines[:-1]:
 				parts = line.split('}')
 				part = parts[0] + '}'
 				out = json.loads(part)
 				exec("self.execute_move(\"" + out['data'] + "\")")
 
 if __name__ == "__main__":
-	game = Game(10, 'GUI')
+	game = Game(8, 'GUI')
 	game.simulate(sys.argv[1])

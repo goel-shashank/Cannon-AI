@@ -184,13 +184,13 @@ if __name__ == '__main__':
         parser = argparse.ArgumentParser(description = 'Cannon Server')
         parser.add_argument('port', metavar = '10000', type = int, help = 'Server port')
         parser.add_argument('-ip', dest = 'ip', type = str, default = '0.0.0.0', help = 'Server IP')
-        parser.add_argument('-n', dest = 'n', metavar = 'N', type = int, default = 10, help = 'Cannon Board Size')
+        parser.add_argument('-n', dest = 'n', metavar = 'N', type = int, default = 8, help = 'Cannon Board Size')
         parser.add_argument('-NC', dest = 'num_clients', metavar = 'num_clients', type = int, default = 2, help = 'Number of clients connecting to the server')
         parser.add_argument('-TL', dest = 'time_limit', metavar = 'time_limit', type = int, default = 150, help = 'Time limit (in s)')
         parser.add_argument('-LOG',dest = 'log_file', metavar = 'log_file', type = str, default = "", help = 'Logger File for Evaluation purposes')
         args = parser.parse_args()
-        if(args.n != 10):
-                print('Board Size should be 10')
+        if(args.n != 8):
+                print('Board Size should be 8')
                 sys.exit()
 
         if args.log_file != '':
