@@ -36,8 +36,8 @@ var spacing = game_canvas.height / rows;
 var current_player = 0;
 
 var player = new Array(2);
-player[0] = {townhalls: 3, color: "#000000", current_soldier: [-1,-1], soldiers: []};
-player[1] = {townhalls: 3, color: "#ffffff", current_soldier: [-1,-1], soldiers: []};
+player[0] = {townhalls: 4, color: "#000000", current_soldier: [-1,-1], soldiers: []};
+player[1] = {townhalls: 4, color: "#ffffff", current_soldier: [-1,-1], soldiers: []};
 
 var is_valid = 0;
 var required_move = 0;
@@ -128,11 +128,11 @@ function PlaceSoldiers()
 
 		places[0] = new Array(contingent);
 		for(var i = 0; i < contingent; i++)
-				places[0][i] = (rows - 1) - i - 1;
+				places[0][i] = (rows - 1) - i;
 
 		places[1] = new Array(contingent);
 		for(var i = 0; i < contingent; i++)
-				places[1][i] = i + 1;
+				places[1][i] = i;
 
 		for(var i = 0; i < rows; i++)
 		{
@@ -155,17 +155,17 @@ function PlaceSoldiers()
 function PlaceTownHalls()
 {
 		piece_ctx.fillStyle = player[0].color;
-		for(var i = 0; i < 3; i++)
+		for(var i = 0; i < 4; i++)
 		{
-				piece_ctx.fillRect(corners[i * townspace][rows - 1].x + 10, corners[i * townspace][rows - 1].y + 10, spacing - 20, spacing - 20);
-				positions[i * townspace][rows - 1].piece = 2;
+				piece_ctx.fillRect(corners[i * townspace + 1][rows - 1].x + 10, corners[i * townspace + 1][rows - 1].y + 10, spacing - 20, spacing - 20);
+				positions[i * townspace + 1][rows - 1].piece = 2;
 		}
 
 		piece_ctx.fillStyle = player[1].color;
-		for(var i = 0; i < 3; i++)
+		for(var i = 0; i < 4; i++)
 		{
-				piece_ctx.fillRect(corners[rows - 1 - i * townspace][0].x + 10, corners[rows - 1 - i * townspace][0].y + 10, spacing - 20, spacing - 20);
-				positions[rows - 1 - i * townspace][0].piece = -2;
+				piece_ctx.fillRect(corners[rows - 2 - i * townspace][0].x + 10, corners[rows - 2 - i * townspace][0].y + 10, spacing - 20, spacing - 20);
+				positions[rows - 2 - i * townspace][0].piece = -2;
 		}
 }
 
@@ -205,8 +205,6 @@ function SelectSoldier(x, y)
 				guide_ctx.fillStyle = grd;
 				guide_ctx.fill();
 				guide_ctx.stroke();
-
-
 
 	      return true;
 		}
@@ -260,8 +258,7 @@ function Guides(x, y, guide)
 		{
 				tx = x + dx[i];
 				ty = y + dy[i] * direction;
-				console.log(sign(positions[tx][ty].piece));
-				console.log(Math.pow(-1, current_player + 1));
+
 				if(!isInBoard(tx, ty) || (sign(positions[tx][ty].piece) == Math.pow(-1, current_player)) || (b[i] == 0 && sign(positions[tx][ty].piece) != Math.pow(-1, current_player + 1)))
 						continue;
 
@@ -441,16 +438,16 @@ function MoveSoldier(x, y)
 				if(positions[x][y].piece == Math.pow(-1, current_player + 1) * 2)
 				{
 						player[1 - current_player]['townhalls'] -= 1;
-						if(player[1 - current_player]['townhalls'] == 0)
+						if(player[1 - current_player]['townhalls'] == 2)
 								required_move = 2;
 				}
 				else if(positions[x][y].piece == Math.pow(-1, current_player + 1))
 				{
 						for(var i = 0; i < player[1 - current_player].soldiers.length; i++)
 						{
-								if(x == player[1 - current_player].soldiers[i].x && y == player[current_player].soldiers[i].y)
+								if(x == player[1 - current_player].soldiers[i].x && y == player[1 - current_player].soldiers[i].y)
 								{
-										player[current_player].soldiers.splice(i, 1);
+										player[1 - current_player].soldiers.splice(i, 1);
 										break;
 								}
 						}
@@ -497,16 +494,16 @@ function ThrowBomb(x, y)
 				if(positions[x][y].piece == Math.pow(-1, current_player + 1) * 2)
 				{
 						player[1 - current_player]['townhalls'] -= 1;
-						if(player[1 - current_player]['townhalls'] == 0)
+						if(player[1 - current_player]['townhalls'] == 2)
 								required_move = 2;
 				}
 				else if(positions[x][y].piece == Math.pow(-1, current_player + 1))
 				{
 						for(var i = 0; i < player[1 - current_player].soldiers.length; i++)
 						{
-								if(x == player[1 - current_player].soldiers[i].x && y == player[current_player].soldiers[i].y)
+								if(x == player[1 - current_player].soldiers[i].x && y == player[1 - current_player].soldiers[i].y)
 								{
-										player[current_player].soldiers.splice(i, 1);
+										player[1 - current_player].soldiers.splice(i, 1);
 										break;
 								}
 						}
@@ -524,6 +521,22 @@ function ThrowBomb(x, y)
 		}
 }
 
+function check_end()
+{
+		for(var i = 0; i < player[current_player].soldier.length; i++)
+		{
+				var x = player[current_player].soldier[i].x;
+				var y = player[current_player].soldier[i].y;
+
+				SelectSoldier(x, y);
+				DeSelectSoldier();
+				if(len(guides_move) != 0)
+						return;
+		}
+		required_move = 2;
+		return;
+}
+
 var startX = null;
 var startY = null;
 function IsClickValid(mouse)
@@ -532,7 +545,7 @@ function IsClickValid(mouse)
 		{
 				for(var j = 0; j < rows; j++)
 				{
-						if(positions[i][j].x - spacing / 2 < mouse.x && positions[i][j].x + spacing / 2 > mouse.x && positions[i][j].y-spacing / 2 < mouse.y && positions[i][j].y + spacing / 2 > mouse.y)
+						if(positions[i][j].x - spacing / 2 < mouse.x && positions[i][j].x + spacing / 2 > mouse.x && positions[i][j].y - spacing / 2 < mouse.y && positions[i][j].y + spacing / 2 > mouse.y)
 						{
               	valid = false;
 								if(positions[i][j].piece == 1 - 2 * current_player)

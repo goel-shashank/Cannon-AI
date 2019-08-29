@@ -54,14 +54,13 @@ class RandomPlayer:
 				if(state == 0):
 					move, type, x, y = self.selectSoldier()
 					success = self.game.execute_move(move)
-					if(success != 0):
-						move_sequence.append(move)
-						state = 1
+					move_sequence.append(move)
+					state = 1
 
 				if(state == 1):
 					while(1):
-						r = random.randint(0, 10)
-						if(r < 10):
+						r = random.randint(0, 15)
+						if(r < 15):
 							move, type, x, y = self.moveSoldier()
 						else:
 							move, type, x, y = self.throwBomb()
@@ -69,9 +68,8 @@ class RandomPlayer:
 							break
 
 					success = self.game.execute_move(move)
-					if(success != 0):
-						move_sequence.append(move)
-						break
+					move_sequence.append(move)
+					break
 
 			self.play_move_seq(move_sequence)
 
