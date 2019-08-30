@@ -294,7 +294,7 @@ function Guides(x, y, guide)
 				if(isInBoard(tx, ty) && positions[tx][ty].piece == Math.pow(-1, current_player + 1))
 						check = 1;
 		}
-		dx = [-1, 0, 1];
+		dx = [-2, 0, 2];
 		dy = [2, 2, 2];
 
 		if(check)
