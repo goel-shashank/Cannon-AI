@@ -12,8 +12,9 @@ The assignment documentation can be found [here]()
 + [Vipul Rathore](https://github.com/rathorevipul28)
 
 ## Rules
-The rules of the game can be found [here](https://nestorgames.com/rulebooks/CANNON_EN.pdf)
-We will be having an 8x8 board and 4 Town Halls instead of 1. The position of the Town Halls is fixed.
+The rules of the original game can be found [here](https://nestorgames.com/rulebooks/CANNON_EN.pdf)
+
+However, we will be having an 8x8 board and 4 Town Halls instead of 1. The position of the Town Halls is fixed. Further instructions are mentioned in the Assignment Document.
 
 ## Dependencies
 + Python2.7
