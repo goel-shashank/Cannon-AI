@@ -155,14 +155,14 @@ function PlaceSoldiers()
 function PlaceTownHalls()
 {
 		piece_ctx.fillStyle = player[0].color;
-		for(var i = 0; i < 4; i++)
+		for(var i = 0; i < rows / 2; i++)
 		{
 				piece_ctx.fillRect(corners[i * townspace + 1][rows - 1].x + 10, corners[i * townspace + 1][rows - 1].y + 10, spacing - 20, spacing - 20);
 				positions[i * townspace + 1][rows - 1].piece = 2;
 		}
 
 		piece_ctx.fillStyle = player[1].color;
-		for(var i = 0; i < 4; i++)
+		for(var i = 0; i < rows / 2; i++)
 		{
 				piece_ctx.fillRect(corners[rows - 2 - i * townspace][0].x + 10, corners[rows - 2 - i * townspace][0].y + 10, spacing - 20, spacing - 20);
 				positions[rows - 2 - i * townspace][0].piece = -2;
@@ -476,6 +476,7 @@ function MoveSoldier(x, y)
 
 				SwitchPlayer();
 				check_end();
+
 				return true;
 		}
 		else
@@ -527,17 +528,20 @@ function ThrowBomb(x, y)
 
 function check_end()
 {
-		// for(var i = 0; i < player[current_player].soldiers.length; i++)
-		// {
-		// 		var x = player[current_player].soldiers[i].x;
-		// 		var y = player[current_player].soldiers[i].y;
-		//
-		// 		SelectSoldier(x, y);
-		// 		DeSelectSoldier();
-		// 		if(guides_move.length != 0 || guides_bomb.length != 0)
-		// 				return;
-		// }
-		// required_move = 2;
+		if(required_move == 2)
+				return;
+				
+		for(var i = 0; i < player[current_player].soldiers.length; i++)
+		{
+				var x = player[current_player].soldiers[i].x;
+				var y = player[current_player].soldiers[i].y;
+
+				SelectSoldier(x, y);
+				DeSelectSoldier();
+				if(guides_move.length != 0 || guides_bomb.length != 0)
+						return;
+		}
+		required_move = 2;
 		return;
 }
 
