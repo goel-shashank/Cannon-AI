@@ -3,7 +3,7 @@ Simulator supporting a user interface for Cannon, an abstract strategy board gam
 
 ## Details
 This is a course assignment for the graduate-level Artificial Intelligence course taught by [**Prof. Mausam**](http://homes.cs.washington.edu/~mausam).  
-The assignment documentation can be found [here]()
+The assignment documentation can be found [here](http://www.cse.iitd.ac.in/~mausam/courses/col333/autumn2019/A2/A2.pdf)
 
 ### Teaching Assistants
 + [Divyanshu Saxena](https://github.com/DivyanshuSaxena)
@@ -12,8 +12,9 @@ The assignment documentation can be found [here]()
 + [Vipul Rathore](https://github.com/rathorevipul28)
 
 ## Rules
-The rules of the game can be found [here](https://nestorgames.com/rulebooks/CANNON_EN.pdf)
-We will be having an 8x8 board and 4 Town Halls instead of 1. The position of the Town Halls is fixed.
+The rules of the original game can be found [here](https://nestorgames.com/rulebooks/CANNON_EN.pdf)
+
+However, we will be having an 8x8 board and 4 Town Halls instead of 1. The position of the Town Halls is fixed. Further instructions are mentioned in the Assignment Document.
 
 ## Dependencies
 + Python2.7
@@ -78,7 +79,7 @@ The horizontal direction towards the right is the positive x-axis.
 The vertical direction towards up is the positive y-axis.
 
 #### Moving a Soldier
-To move a soldier from (1, 2) to (2, 4)
+To move a soldier from (1, 2) to (2, 4).
 
 `S 1 2 M 2 4`
 
