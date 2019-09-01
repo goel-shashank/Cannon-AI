@@ -3,7 +3,7 @@ Simulator supporting a user interface for Cannon, an abstract strategy board gam
 
 ## Details
 This is a course assignment for the graduate-level Artificial Intelligence course taught by [**Prof. Mausam**](http://homes.cs.washington.edu/~mausam).  
-The assignment documentation can be found [here]()
+The assignment documentation can be found [here](http://www.cse.iitd.ac.in/~mausam/courses/col333/autumn2019/A2/A2.pdf)
 
 ### Teaching Assistants
 + [Divyanshu Saxena](https://github.com/DivyanshuSaxena)
@@ -79,7 +79,7 @@ The horizontal direction towards the right is the positive x-axis.
 The vertical direction towards up is the positive y-axis.
 
 #### Moving a Soldier
-To move a soldier from (1, 2) to (2, 4)
+To move a soldier from (1, 2) to (2, 4).
 
 `S 1 2 M 2 4`
 
