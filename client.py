@@ -231,14 +231,15 @@ def game_loop(args):
 	## Initialize Client
 	server_string_list = server_string.strip().split()
 	player_id = server_string_list[0]
-	board_size = int(server_string_list[1])
-	game_timer = int(server_string_list[2])
+	rows = int(server_string_list[1])
+	cols = int(server_string_list[2])
+	game_timer = int(server_string_list[3])
 	client.setGameTimer(game_timer)
 	print('***********************************\n')
 	print('-> You are player ' + str(player_id))
 	print('-> You are alloted a time of ' + str(game_timer) + 's\n')
 	print('***********************************\n')
-	game = Game(board_size, args.mode, game_timer)
+	game = Game(rows, cols, args.mode, game_timer)
 
 	client.SendData2Process(server_string) ## Initialize Process
 

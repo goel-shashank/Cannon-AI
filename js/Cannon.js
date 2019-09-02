@@ -1,35 +1,35 @@
 var rows = parseInt(document.currentScript.getAttribute('rows'));
-var size = parseInt(document.currentScript.getAttribute('size'));
-var townspace = parseInt(document.currentScript.getAttribute('townspace'));
-var contingent = parseInt(document.currentScript.getAttribute('contingent'));
+var cols = parseInt(document.currentScript.getAttribute('cols'));
+var height = parseInt(document.currentScript.getAttribute('height'));
+var width = parseInt(document.currentScript.getAttribute('width'));
 
-var dimension = [size, size];
+var dimension = [height, width];
 
 var game_canvas = document.getElementById('GameBoard');
+game_canvas.height = dimension[0];
 game_canvas.width = dimension[1];
-game_canvas.height = dimension[1];
 var game_ctx = game_canvas.getContext('2d');
 
 var piece_canvas = document.getElementById('PieceLayer');
+piece_canvas.height = dimension[0];
 piece_canvas.width = dimension[1];
-piece_canvas.height = dimension[1];
 var piece_ctx = piece_canvas.getContext('2d');
 
 var guide_canvas = document.getElementById('GuideLayer');
+guide_canvas.height = dimension[0];
 guide_canvas.width = dimension[1];
-guide_canvas.height = dimension[1];
 var guide_ctx = guide_canvas.getContext('2d');
 
 var test_canvas = document.getElementById('TestLayer');
+test_canvas.height = dimension[0];
 test_canvas.width = dimension[1];
-test_canvas.height = dimension[1];
 var test_ctx = test_canvas.getContext('2d');
 
 game_ctx.fillStyle = "#ffffff";
 game_ctx.fillRect(0, 0, game_canvas.width, game_canvas.height);
 
 var centerx = game_canvas.width / 2;
-var centery = game_canvas.width / 2;
+var centery = game_canvas.height / 2;
 
 var spacing = game_canvas.height / rows;
 
@@ -64,25 +64,25 @@ function Point(x, y)
 var guides_move = [];
 var guides_bomb = [];
 
-var positions = new Array(rows);
-for (var i = 0; i < rows; i++)
+var positions = new Array(cols);
+for (var i = 0; i < cols; i++)
 {
   	positions[i] = new Array(rows);
 }
 
-var corners = new Array(rows + 1);
-for (var i = 0; i < rows + 1; i++)
+var corners = new Array(cols + 1);
+for (var i = 0; i < cols + 1; i++)
 {
   	corners[i] = new Array(rows + 1);
 }
 
 function PlotPoints()
 {
-		for (var i = 0; i < rows; i++)
+		for (var i = 0; i < cols; i++)
 		{
 				for (var j = 0; j < rows; j++)
 				{
-						var x = i - rows / 2;
+						var x = i - cols / 2;
 						var y = j - rows / 2;
 
 						positions[i][j] = new Point(centerx + spacing * x + spacing / 2, centery + spacing * y + spacing / 2);
@@ -93,11 +93,11 @@ function PlotPoints()
 
 function PlotCorners()
 {
-		for (var i = 0; i < rows + 1; i++)
+		for (var i = 0; i < cols + 1; i++)
 		{
 				for (var j = 0; j < rows + 1; j++)
 				{
-						var x = i - rows / 2;
+						var x = i - cols / 2;
 						var y = j - rows / 2;
 
 						corners[i][j] = new Point(centerx + spacing * x, centery + spacing * y);
@@ -108,7 +108,7 @@ function PlotCorners()
 
 function FillBoardSquares()
 {
-		for(var i = 0; i < rows; i++)
+		for(var i = 0; i < cols; i++)
 		{
 				for(var j = 0; j < rows; j++)
 				{
@@ -126,17 +126,17 @@ function PlaceSoldiers()
 {
 		var places = new Array(2);
 
-		places[0] = new Array(contingent);
-		for(var i = 0; i < contingent; i++)
+		places[0] = new Array(3);
+		for(var i = 0; i < 3; i++)
 				places[0][i] = (rows - 1) - i;
 
-		places[1] = new Array(contingent);
-		for(var i = 0; i < contingent; i++)
+		places[1] = new Array(3);
+		for(var i = 0; i < 3; i++)
 				places[1][i] = i;
 
-		for(var i = 0; i < rows; i++)
+		for(var i = 0; i < cols; i++)
 		{
-				for(var j = 0; j < contingent; j++)
+				for(var j = 0; j < 3; j++)
 				{
 						piece_ctx.beginPath();
 						piece_ctx.strokeStyle = player[i % 2].color;
@@ -155,17 +155,17 @@ function PlaceSoldiers()
 function PlaceTownHalls()
 {
 		piece_ctx.fillStyle = player[0].color;
-		for(var i = 0; i < rows / 2; i++)
+		for(var i = 0; i < cols / 2; i++)
 		{
-				piece_ctx.fillRect(corners[i * townspace + 1][rows - 1].x + 10, corners[i * townspace + 1][rows - 1].y + 10, spacing - 20, spacing - 20);
-				positions[i * townspace + 1][rows - 1].piece = 2;
+				piece_ctx.fillRect(corners[i * 2 + 1][rows - 1].x + 10, corners[i * 2 + 1][rows - 1].y + 10, spacing - 20, spacing - 20);
+				positions[i * 2 + 1][rows - 1].piece = 2;
 		}
 
 		piece_ctx.fillStyle = player[1].color;
-		for(var i = 0; i < rows / 2; i++)
+		for(var i = 0; i < cols / 2; i++)
 		{
-				piece_ctx.fillRect(corners[rows - 2 - i * townspace][0].x + 10, corners[rows - 2 - i * townspace][0].y + 10, spacing - 20, spacing - 20);
-				positions[rows - 2 - i * townspace][0].piece = -2;
+				piece_ctx.fillRect(corners[cols - 2 - i * 2][0].x + 10, corners[cols - 2 - i * 2][0].y + 10, spacing - 20, spacing - 20);
+				positions[cols - 2 - i * 2][0].piece = -2;
 		}
 }
 
@@ -177,7 +177,7 @@ PlaceTownHalls();
 
 function isInBoard(x, y)
 {
-			if(x >= 0 && x <= (rows - 1) && y >= 0 && y <= (rows - 1))
+			if(x >= 0 && x <= (cols - 1) && y >= 0 && y <= (rows - 1))
 					return true;
 			return false;
 }
@@ -530,7 +530,7 @@ function check_end()
 {
 		if(required_move == 2)
 				return;
-				
+
 		for(var i = 0; i < player[current_player].soldiers.length; i++)
 		{
 				var x = player[current_player].soldiers[i].x;
@@ -549,7 +549,7 @@ var startX = null;
 var startY = null;
 function IsClickValid(mouse)
 {
-		for(var i = 0; i < rows; i++)
+		for(var i = 0; i < cols; i++)
 		{
 				for(var j = 0; j < rows; j++)
 				{

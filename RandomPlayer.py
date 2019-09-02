@@ -9,8 +9,9 @@ class RandomPlayer:
 		data = sys.stdin.readline().strip().split()
 		self.player = int(data[0]) - 1
 		self.n = int(data[1])
-		self.time_left = int(data[2])
-		self.game = Game(self.n)
+		self.m = int(data[2])
+		self.time_left = int(data[3])
+		self.game = Game(self.n, self.m)
 		self.play()
 
 	def selectSoldier(self):

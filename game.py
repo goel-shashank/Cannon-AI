@@ -13,9 +13,7 @@ from selenium import webdriver
 from jinja2 import Environment, FileSystemLoader
 from selenium.webdriver.chrome.options import Options
 
-display_sizes = {8: 600}
-townspace_sizes = {8: 2}
-contingent_sizes = {8: 3}
+display = {8: 600, 10: 750}
 
 PATH = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE_ENVIRONMENT = Environment(autoescape = False, loader = FileSystemLoader(os.path.join(PATH, 'templates')), trim_blocks = False)
@@ -23,30 +21,30 @@ TEMPLATE_ENVIRONMENT = Environment(autoescape = False, loader = FileSystemLoader
 def render_template(template_filename, context):
 	return TEMPLATE_ENVIRONMENT.get_template(template_filename).render(context)
 
-def create_index_html(rows, size, townspace, contingent):
+def create_index_html(rows, cols, height, width):
 	fname = "Cannon.html"
 	context = {
 		'rows': rows,
-		'size': size,
-		'townspace': townspace,
-		'contingent': contingent
+		'cols': cols,
+		'height': height,
+		'width': width
 	}
 	with open(fname, 'w') as f:
 		html = render_template('index.html', context)
 		f.write(html)
 
 class Game:
-	def __init__(self, n, mode = 'CUI', time = 120):
-		if(n in display_sizes):
+	def __init__(self, n, m, mode = 'CUI', time = 120):
+		if(n in display and m in display):
 			self.rows = int(n)
-			self.display = display_sizes[n]
-			self.townspace = townspace_sizes[n]
-			self.contingent = contingent_sizes[n]
+			self.cols = int(m)
+			self.height = display[n]
+			self.width = display[m]
 		else:
-			raise AssertionError("Board size must be 8")
+			raise AssertionError("Board dimensions should be 8 or 10")
 
 		# setup Driver
-		create_index_html(self.rows, self.display, self.townspace, self.contingent)
+		create_index_html(self.rows, self.cols, self.height, self.width)
 
 		options = Options()
 		options.add_argument("--disable-infobars")
@@ -56,11 +54,11 @@ class Game:
 
 		abs_path = os.path.abspath('Cannon.html')
 		self.driver.get("file:" + abs_path)
-		self.driver.set_window_size(width = self.display + 10, height = self.display + 132.5)
+		self.driver.set_window_size(width = self.width + 10, height = self.height + 132.5)
 
 		self.timer = time
-		self.townhalls = 4
-		self.spacing = float(self.display) / self.rows
+		self.townhalls = self.cols // 2
+		self.spacing = float(self.height) / self.rows
 
 	def click_at(self, x, y) :
 		e = self.driver.find_elements_by_id('PieceLayer')
@@ -134,7 +132,7 @@ class Game:
 		positions = list(self.driver.execute_script('return positions;'))
 
 		for i in range(self.rows):
-			for j in range(self.rows):
+			for j in range(self.cols):
 				piece = dict(positions[i][j])['piece']
 				if(piece == 2):
 					townhallsA += 1
@@ -227,5 +225,5 @@ class Game:
 				exec("self.execute_move(\"" + out['data'] + "\")")
 
 if __name__ == "__main__":
-	game = Game(8, 'GUI')
+	game = Game(8, 8, 'GUI')
 	game.simulate(sys.argv[1])
