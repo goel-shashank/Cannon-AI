@@ -73,10 +73,11 @@ A move is a triple: `type` `x` `y`.
 + B - Throw a Bomb
 
 ### Board Settings
-The board is an n x n board.
+The board is an n x m board.
 The top-left corner point is the origin.
 The horizontal direction towards the right is the positive x-axis.
-The vertical direction towards up is the positive y-axis.
+The vertical direction towards down is the positive y-axis.
+The indexing begins with 0 in both the directions.
 
 #### Moving a Soldier
 To move a soldier from (1, 2) to (2, 4).
