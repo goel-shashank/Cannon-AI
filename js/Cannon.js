@@ -394,7 +394,7 @@ function Guides(x, y, guide)
 												tx = x + cdx[i][j][k];
 												ty = y + cdy[i][j][k] * direction;
 
-												if(!isInBoard(tx, ty) || sign(positions[tx][ty].piece) == Math.pow(-1, current_player))
+												if(!isInBoard(tx, ty) || positions[tx][ty].piece != 0)
 														continue;
 
 												if(guide)
