@@ -198,9 +198,11 @@ class Game:
 
 		if(type == 'S'):
 			self.click_at(x, y)
-		elif(type == 'M' and dict(positions[x][y])['guide'] == 1):
+		elif(type == 'M' and (dict(positions[x][y])['guide'] == 1 or dict(positions[x][y])['guide'] == 3)):
+			self.driver.execute_script('setAction(0);')
 			self.click_at(x, y)
-		elif(type == 'B' and dict(positions[x][y])['guide'] == 2):
+		elif(type == 'B' and (dict(positions[x][y])['guide'] == 2 or dict(positions[x][y])['guide'] == 3)):
+			self.driver.execute_script('setAction(1);')
 			self.click_at(x, y)
 		else:
 			string_valid = 0

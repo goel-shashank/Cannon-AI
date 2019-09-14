@@ -33,6 +33,8 @@ var centery = game_canvas.height / 2;
 
 var spacing = game_canvas.height / rows;
 
+var move_or_throw = -1;
+
 var current_player = 0;
 
 var player = new Array(2);
@@ -369,13 +371,26 @@ function Guides(x, y, guide)
 														{
 																if(guide)
 																{
-																		guide_ctx.beginPath();
-																		guide_ctx.strokeStyle = "#8b0000";
-																		guide_ctx.arc(positions[tx][ty].x, positions[tx][ty].y, spacing / 8, 0, Math.PI * 2);
-																		guide_ctx.fillStyle = "#8b0000";
-																		guide_ctx.fill();
-																		guide_ctx.stroke();
-																		positions[tx][ty].guide = 2;
+																		if(positions[tx][ty].guide == 1)
+																		{
+																				guide_ctx.beginPath();
+																				guide_ctx.strokeStyle = "#8b0000";
+																				guide_ctx.arc(positions[tx][ty].x, positions[tx][ty].y, spacing / 8, 0, Math.PI * 2);
+																				guide_ctx.fillStyle = "#8b0000";
+																				guide_ctx.fill();
+																				guide_ctx.stroke();
+																				positions[tx][ty].guide = 3;
+																		}
+																		else
+																		{
+																				guide_ctx.beginPath();
+																				guide_ctx.strokeStyle = "#8b0000";
+																				guide_ctx.arc(positions[tx][ty].x, positions[tx][ty].y, spacing / 8, 0, Math.PI * 2);
+																				guide_ctx.fillStyle = "#8b0000";
+																				guide_ctx.fill();
+																				guide_ctx.stroke();
+																				positions[tx][ty].guide = 2;
+																		}
 																		var pair = new Pair(tx, ty);
 																		guides_bomb.push(pair);
 																}
@@ -425,9 +440,14 @@ function Guides(x, y, guide)
 		return executable;
 }
 
+function setAction(b)
+{
+		move_or_throw = b;
+}
+
 function MoveSoldier(x, y)
 {
-		if(positions[x][y].guide == 1)
+		if(positions[x][y].guide == 1 || positions[x][y].guide == 3)
 		{
 				required_move = 0;
 
@@ -487,7 +507,7 @@ function MoveSoldier(x, y)
 
 function ThrowBomb(x, y)
 {
-		if(positions[x][y].guide == 2)
+		if(positions[x][y].guide == 2 || positions[x][y].guide == 3)
 		{
 				required_move = 0;
 
@@ -562,13 +582,13 @@ function IsClickValid(mouse)
 												valid = DeSelectSoldier();
 										valid = SelectSoldier(i, j);
 								}
-								if(positions[i][j].guide == 1)
-								{
-										valid = MoveSoldier(i, j);
-								}
-								if(positions[i][j].guide == 2)
+								if((positions[i][j].guide == 2 || positions[i][j].guide == 3) && (move_or_throw == 1 || move_or_throw == -1))
 								{
 										valid = ThrowBomb(i, j);
+								}
+								if((positions[i][j].guide == 1 || positions[i][j].guide == 3) && (move_or_throw == 0 || move_or_throw == -1))
+								{
+										valid = MoveSoldier(i, j);
 								}
 								is_valid = valid;
 						}
