@@ -108,7 +108,7 @@ This score will be based on the extent of victory. It is calculated as follows:
 
 #### Condition for Stalemate
 
-**Case 1**: Player B has lost all its soldiers and Player A still has moves to play.
+**Case 1**: Player A kills the last soldier of Player B.
 
 |Town Halls Left: A	|Town Halls Left: B	|Town Hall Margin Score: A	|Town Hall Margin Score: B|
 | ------------- | ------------- | ------------- | ------------- | 
