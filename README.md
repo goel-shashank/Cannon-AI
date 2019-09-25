@@ -128,7 +128,7 @@ This score will be based on the extent of victory. It is calculated as follows:
 
 #### Timeout or Invalid Move
 
-Note) In case a player suffers a TIMEOUT or INVALID move, he/she will automatically lose the gane and it will count as a (2-*x*) defeat towards the player and a (*x*-2) win for the opponent, where *x* is the number of Town Halls remaining with the opponent.
+Note) In case a player suffers a TIMEOUT or INVALID move, he or she will automatically lose the gane and it will count as a (2-*x*) defeat towards the player and a (*x*-2) win for the opponent, where *x* is the number of Town Halls remaining with the opponent.
 
 ### The Army Margin
 This score directly depends on the number of soldiers you have left at the end of the game. It is calculated as follows:  
