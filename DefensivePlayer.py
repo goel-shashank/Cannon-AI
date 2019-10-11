@@ -229,6 +229,7 @@ class DefensivePlayer:
 	def checkIfAttacked(self, id):
 		x, y = self.game.soldiers[id].x, self.game.soldiers[id].y
 		direction = self.game.direction
+		severity = 0
 		
 		# Check if soldier can be attacked by any immediate enemy
 		enemies = [(-2, 2), (-1, -1), (-1, 0), (0, -1), (0, 2), (1, -1), (1, 0), (2, 2)]
@@ -236,7 +237,7 @@ class DefensivePlayer:
 			ex, ey = x + enemy[0], y + direction*enemy[1]
 			if self.game.IsInBoard(ex, ey) and (self.game.board[ex][ey] == math.pow(-1, 1 - self.player)):
 				# Enemy can attack - move from current position.
-				return True
+				severity += 1
 
 		# Check if soldier can be attacked by any cannon
 		cannons = [(-1, 0), (-1, -1), (0, -1), (1, -1), (1, 0), (1, 1), (0, 1), (-1, 1)]  # The directions from where the cannons can attack
@@ -258,8 +259,8 @@ class DefensivePlayer:
 						break
 					if flag:
 						# Cannon Present
-						return True
-		return False
+						severity += 1
+		return severity
 
 	def SelectSoldier(self):
 		type = 'S'
@@ -268,12 +269,14 @@ class DefensivePlayer:
 			x, y = self.game.soldiers[i].x, self.game.soldiers[i].y
 			if(x != -1 and y != -1):
 				break
-		eprint (x, y)
+		# eprint(x, y)
+		severeSoldier = 0
+		maxSeverity = 0
 		for j in range(len(self.game.soldiers)):
-			if self.checkIfAttacked(j):
-				x, y = self.game.soldiers[j].x, self.game.soldiers[j].y
-				if(x != -1 and y != -1):
-					break
+			if maxSeverity < self.checkIfAttacked(j):
+				maxSeverity = self.checkIfAttacked(j)
+				severeSoldier = j
+		x, y = self.game.soldiers[severeSoldier].x, self.game.soldiers[severeSoldier].y
 		return '{type} {x} {y}'.format(type = type, x = x, y = y), type, x, y
 
 	def MoveSoldier(self):
@@ -317,6 +320,7 @@ class DefensivePlayer:
 					if(success != 0):
 						sequence.append(move)
 						self.state = 1
+					eprint (move)
 
 				if(self.state == 1):
 					while(1):
