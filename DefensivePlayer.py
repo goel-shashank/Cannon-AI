@@ -7,10 +7,16 @@ import random
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
+# Hyperparameter
+factor = 1.5
+
 class Pair():
 	def __init__(self, x, y):
 		self.x = x
 		self.y = y
+
+	def __str__(self):
+		return ("(" + str(self.x) + ", " + str(self.y) + ")")
 
 class Game():
 	def __init__(self, id, rows, cols):
@@ -154,7 +160,7 @@ class Game():
 
 							self.moves.append(Pair(x = tx, y = ty))
 							executable = 1
-
+		eprint ("For soldier at " + str(x) + ", " + str(y) + ": " + str([str(x) for x in self.moves]))
 		return executable
 
 	def MoveSoldier(self, x, y):
@@ -245,14 +251,12 @@ class DefensivePlayer:
 		for cannon in cannons:
 			for blank in blanks:
 				# First check if cannon attack is even possible from this direction
-				cx = x + cannon[0]*(blank - 1) 
-				cy = y + cannon[1]*(blank - 1)
+				cx, cy = x + cannon[0]*(blank - 1), y + cannon[1]*(blank - 1)
 				if self.game.IsInBoard(cx, cy) and self.game.board[cx][cy] == 0:
 					# If cannon attack possible, check if cannon exists or not
 					flag = True
 					for i in range(3):
-						ex = x + cannon[0]*(i + blank)
-						ey = y + cannon[1]*(i + blank)
+						ex, ey = x + cannon[0]*(i + blank), y + cannon[1]*(i + blank)
 						if self.game.IsInBoard(ex, ey) and self.game.board[ex][ey] == math.pow(-1, 1 - self.player):
 							continue
 						flag = False
@@ -260,6 +264,11 @@ class DefensivePlayer:
 					if flag:
 						# Cannon Present
 						severity += 1
+
+		# Assign higher severity to soldiers who are nearer to Townhalls
+		if (self.player == 1 and y < 3) or (self.player == 0 and y > 6):
+			severity = severity * factor
+
 		return severity
 
 	def SelectSoldier(self):
@@ -274,8 +283,10 @@ class DefensivePlayer:
 		maxSeverity = 0
 		for j in range(len(self.game.soldiers)):
 			if maxSeverity < self.checkIfAttacked(j):
-				maxSeverity = self.checkIfAttacked(j)
-				severeSoldier = j
+				jx, jy = self.game.soldiers[j].x, self.game.soldiers[j].y
+				if self.game.Guides(jx, jy) != 0:
+					maxSeverity = self.checkIfAttacked(j)
+					severeSoldier = j
 		x, y = self.game.soldiers[severeSoldier].x, self.game.soldiers[severeSoldier].y
 		return '{type} {x} {y}'.format(type = type, x = x, y = y), type, x, y
 
@@ -323,6 +334,7 @@ class DefensivePlayer:
 					eprint (move)
 
 				if(self.state == 1):
+					# Make a random move for the selected soldier unless a townhall can be hit.
 					while(1):
 						i = random.randint(0, 10)
 						if(i < 10):
