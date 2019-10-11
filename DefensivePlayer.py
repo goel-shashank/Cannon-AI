@@ -4,6 +4,9 @@ import time
 import math
 import random
 
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
+
 class Pair():
 	def __init__(self, x, y):
 		self.x = x
@@ -211,7 +214,7 @@ class Game():
 
 		return status
 
-class RandomPlayer:
+class DefensivePlayer:
 	def __init__(self):
 		data = sys.stdin.readline().strip().split()
 		self.player = int(data[0]) - 1
@@ -222,6 +225,42 @@ class RandomPlayer:
 		self.state = 0
 		self.play()
 
+	# Check if the given soldier is being attacked by the enemy army
+	def checkIfAttacked(self, id):
+		x, y = self.game.soldiers[id].x, self.game.soldiers[id].y
+		direction = self.game.direction
+		
+		# Check if soldier can be attacked by any immediate enemy
+		enemies = [(-2, 2), (-1, -1), (-1, 0), (0, -1), (0, 2), (1, -1), (1, 0), (2, 2)]
+		for enemy in enemies:
+			ex, ey = x + enemy[0], y + direction*enemy[1]
+			if self.game.IsInBoard(ex, ey) and (self.game.board[ex][ey] == math.pow(-1, 1 - self.player)):
+				# Enemy can attack - move from current position.
+				return True
+
+		# Check if soldier can be attacked by any cannon
+		cannons = [(-1, 0), (-1, -1), (0, -1), (1, -1), (1, 0), (1, 1), (0, 1), (-1, 1)]  # The directions from where the cannons can attack
+		blanks = [2, 3]
+		for cannon in cannons:
+			for blank in blanks:
+				# First check if cannon attack is even possible from this direction
+				cx = x + cannon[0]*(blank - 1) 
+				cy = y + cannon[1]*(blank - 1)
+				if self.game.IsInBoard(cx, cy) and self.game.board[cx][cy] == 0:
+					# If cannon attack possible, check if cannon exists or not
+					flag = True
+					for i in range(3):
+						ex = x + cannon[0]*(i + blank)
+						ey = y + cannon[1]*(i + blank)
+						if self.game.IsInBoard(ex, ey) and self.game.board[ex][ey] == math.pow(-1, 1 - self.player):
+							continue
+						flag = False
+						break
+					if flag:
+						# Cannon Present
+						return True
+		return False
+
 	def SelectSoldier(self):
 		type = 'S'
 		while(1):
@@ -229,6 +268,12 @@ class RandomPlayer:
 			x, y = self.game.soldiers[i].x, self.game.soldiers[i].y
 			if(x != -1 and y != -1):
 				break
+		eprint (x, y)
+		for j in range(len(self.game.soldiers)):
+			if self.checkIfAttacked(j):
+				x, y = self.game.soldiers[j].x, self.game.soldiers[j].y
+				if(x != -1 and y != -1):
+					break
 		return '{type} {x} {y}'.format(type = type, x = x, y = y), type, x, y
 
 	def MoveSoldier(self):
@@ -295,4 +340,4 @@ class RandomPlayer:
 			self.game.execute_move(move)
 
 random.seed(0)
-RandomPlayer()
+DefensivePlayer()
