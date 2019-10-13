@@ -3,7 +3,6 @@ import sys
 import time
 import math
 import random
-import numpy as np
 
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
@@ -221,7 +220,7 @@ class Game():
 
 		return status
 
-class DefensivePlayer:
+class AggressivePlayer:
 	def __init__(self):
 		data = sys.stdin.readline().strip().split()
 		self.player = int(data[0]) - 1
@@ -233,8 +232,8 @@ class DefensivePlayer:
 		self.play()
 
 	# Check if the given soldier is being attacked by the enemy army
-	def checkIfAttacked(self, idx, idy):
-		x, y = idx, idy
+	def checkIfAttacked(self, id):
+		x, y = self.game.soldiers[id].x, self.game.soldiers[id].y
 		direction = self.game.direction
 		severity = 0
 		
@@ -264,7 +263,6 @@ class DefensivePlayer:
 						break
 					if flag:
 						# Cannon Present
-						# eprint ("Found Cannon attacking " + str(idx) + ", " + str(idy))
 						severity += 1
 
 		# Assign higher severity to soldiers who are nearer to Townhalls
@@ -278,49 +276,39 @@ class DefensivePlayer:
 		while(1):
 			i = random.randint(0, len(self.game.soldiers) - 1)
 			x, y = self.game.soldiers[i].x, self.game.soldiers[i].y
-			if (x != -1 and y != -1 and self.game.Guides(x, y) != 0):
+			if(x != -1 and y != -1):
 				break
 
 		severeSoldier = 0
 		maxSeverity = 0
 		for j in range(len(self.game.soldiers)):
-			# eprint("Checking soldier at " + str(self.game.soldiers[j].x) + ", " + str(self.game.soldiers[j].y))
-			if self.game.soldiers[j].x == -1 or self.game.soldiers[j].y == -1:
-				continue
-			severity = self.checkIfAttacked(self.game.soldiers[j].x, self.game.soldiers[j].y)
-			if maxSeverity < severity:
+			if maxSeverity < self.checkIfAttacked(j):
 				jx, jy = self.game.soldiers[j].x, self.game.soldiers[j].y
 				if self.game.Guides(jx, jy) != 0:
-					maxSeverity = severity
+					maxSeverity = self.checkIfAttacked(j)
 					severeSoldier = j
 		sx, sy = self.game.soldiers[severeSoldier].x, self.game.soldiers[severeSoldier].y
 		
 		# Check if the severe soldier has any remaining moves
-		if sx != -1 and sy != -1 and self.game.Guides(sx, sy) != 0:
-			x, y = sx, sy
+		if self.game.Guides(sx, sy) != 0:
+			x, y = sx, sy		
 		return '{type} {x} {y}'.format(type = type, x = x, y = y), type, x, y
 
-	def MoveSoldier(self, sx, sy):
+	def MoveSoldier(self):
 		type = 'M'
 		if(len(self.game.moves) == 0):
 			return -1, -1, -1, -1
-
-		bestMove = 0
-		minSeverity = 1000000
-		for i in range(len(self.game.moves)):
-			move = self.game.moves[i]
-			if (move.x != -1 and move.y != -1 and minSeverity > self.checkIfAttacked(move.x, move.y)):
-				minSeverity = self.checkIfAttacked(move.x, move.y)
-				bestMove = i
-		x, y = self.game.moves[bestMove].x, self.game.moves[bestMove].y
+		while(1):
+			i = random.randint(0, len(self.game.moves) - 1)
+			x, y = self.game.moves[i].x, self.game.moves[i].y
+			if(x != -1 and y != -1):
+				break
 
 		# However, if a townhall can be attacked, use that move
 		for move in self.game.moves:
 			token = self.game.board[move.x][move.y]
-			if (move.x != -1 and move.y != -1):
-				if (self.player == 0 and token == -2) or (self.player == 1 and token == 2):
-					x, y = move.x, move.y
-					break
+			if (self.player == 0 and token == -2) or (self.player == 1 and token == 2):
+				x, y = move.x, move.y
 		return '{type} {x} {y}'.format(type = type, x = x, y = y), type, x, y
 
 	def ThrowBomb(self):
@@ -354,12 +342,11 @@ class DefensivePlayer:
 						sequence.append(move)
 						self.state = 1
 
-				sx, sy = x, y
 				if(self.state == 1):
 					while(1):
 						i = random.randint(0, 10)
 						if(i < 10):
-							move, type, x, y = self.MoveSoldier(sx, sy)
+							move, type, x, y = self.MoveSoldier()
 						else:
 							move, type, x, y = self.ThrowBomb()
 
@@ -377,4 +364,4 @@ class DefensivePlayer:
 			self.game.execute_move(move)
 
 random.seed(0)
-DefensivePlayer()
+AggressivePlayer()
