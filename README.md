@@ -100,16 +100,35 @@ At the end of a game both players will be given a score.
 ### The Town Hall Margin
 This score will be based on the extent of victory. It is calculated as follows:  
 
-| Your Town Halls Remaining | Opponent's Town Halls Remaining | Town Hall Margin Score |  
-| ------------- | ------------- | ------------- |
-| 4 | 2 | 10 |  
-| 3 | 2 | 8 |  
-| 4 | 3 | 7 |  
-| 4 | 4 | 5 |  
-| 3 | 3 | 5 |  
-| 3 | 4 | 3 |  
-| 2 | 3 | 2 |  
-| 2 | 4 | 0 |
+|Town Halls Left: A	|Town Halls Left: B	|Town Hall Margin Score: A	|Town Hall Margin Score: B|
+| ------------- | ------------- | ------------- | ------------- | 
+| 4 | 2 | 10 | 0 |
+| 3 | 2 | 8 | 2 |
+
+
+#### Condition for Stalemate
+
+**Case 1**: Player A kills the last soldier of Player B.
+
+|Town Halls Left: A	|Town Halls Left: B	|Town Hall Margin Score: A	|Town Hall Margin Score: B|
+| ------------- | ------------- | ------------- | ------------- | 
+| 4 |	3 |	10 |	0 |
+| 4 |	4 |	8 |	2 |
+| 3 |	3 |	8 |	2 |
+| 3 |	4 |	6 |	4 |
+
+**Case 2**: Both Players have soldiers left, but Player B has no immediate moves to play
+
+|Town Halls Left: A	|Town Halls Left: B	|Town Hall Margin Score: A	|Town Hall Margin Score: B|
+| ------------- | ------------- | ------------- | ------------- | 
+| 4 |	3 |	8 |	2 |
+| 4 |	4 |	6 |	4 |
+| 3 |	3 |	6 |	4 |
+| 3 |	4 |	4 |	6 |
+
+#### Timeout or Invalid Move
+
+Note) In case a player suffers a TIMEOUT or INVALID move, he or she will automatically lose the gane and it will count as a (2-*x*) defeat towards the player and a (*x*-2) win for the opponent, where *x* is the number of Town Halls remaining with the opponent.
 
 ### The Army Margin
 This score directly depends on the number of soldiers you have left at the end of the game. It is calculated as follows:  
@@ -123,4 +142,4 @@ Player 2 has 2 Town Hall remaining and has 9 soldiers left on the board.
 Player 1 score will be: **8.12**  
 Player 2 score will be: **2.09**  
 
-Note) In case a player suffers a TIMEOUT or INVALID move, he/she will automatically lose the gane and it will count as a (2-*x*) defeat towards the player and a (*x*-2) win for the opponent, where *x* is the number of Town Halls remaining with the opponent.
+

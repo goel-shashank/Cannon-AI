@@ -106,17 +106,61 @@ class Game:
 		elif(tA == 2 and tB == 4):
 			scoreA = 0
 			scoreB = 10
-		elif(tA == tB):
-			scoreA = 5
-			scoreB = 5
-		elif(tA > tB):
-			scoreA = 7
-			scoreB = 3
-		elif(tA < tB):
-			scoreA = 3
-			scoreB = 7
 		else:
-			AssertionError('cannot calculate score')
+			if(self.get_current_player() == 1):
+				if(self.driver.execute_script('return player[current_player].soldiers.length;') == 0):
+					if(tA == 4 and tB == 3):
+						scoreA = 10
+						scoreB = 0
+					elif(tA == 4 and tB == 4):
+						scoreA = 8
+						scoreB = 2
+					elif(tA == 3 and tB == 3):
+						scoreA = 8
+						scoreB = 2
+					elif(tA == 3 and tB == 4):
+						scoreA = 6
+						scoreB = 4
+				else:
+					if(tA == 4 and tB == 3):
+						scoreA = 8
+						scoreB = 2
+					elif(tA == 4 and tB == 4):
+						scoreA = 6
+						scoreB = 4
+					elif(tA == 3 and tB == 3):
+						scoreA = 6
+						scoreB = 4
+					elif(tA == 3 and tB == 4):
+						scoreA = 4
+						scoreB = 6
+			else:
+				if(self.driver.execute_script('return player[current_player].soldiers.length;') == 0):
+					if(tA == 4 and tB == 3):
+						scoreA = 4
+						scoreB = 6
+					elif(tA == 4 and tB == 4):
+						scoreA = 2
+						scoreB = 8
+					elif(tA == 3 and tB == 3):
+						scoreA = 2
+						scoreB = 8
+					elif(tA == 3 and tB == 4):
+						scoreA = 0
+						scoreB = 10
+				else:
+					if(tA == 4 and tB == 3):
+						scoreA = 6
+						scoreB = 4
+					elif(tA == 4 and tB == 4):
+						scoreA = 4
+						scoreB = 6
+					elif(tA == 3 and tB == 3):
+						scoreA = 4
+						scoreB = 6
+					elif(tA == 3 and tB == 4):
+						scoreA = 2
+						scoreB = 8
 
 		scoreA = scoreA + float(sA) / 100.0
 		scoreB = scoreB + float(sB) / 100.0
@@ -198,9 +242,11 @@ class Game:
 
 		if(type == 'S'):
 			self.click_at(x, y)
-		elif(type == 'M' and dict(positions[x][y])['guide'] == 1):
+		elif(type == 'M' and (dict(positions[x][y])['guide'] == 1 or dict(positions[x][y])['guide'] == 3)):
+			self.driver.execute_script('setAction(0);')
 			self.click_at(x, y)
-		elif(type == 'B' and dict(positions[x][y])['guide'] == 2):
+		elif(type == 'B' and (dict(positions[x][y])['guide'] == 2 or dict(positions[x][y])['guide'] == 3)):
+			self.driver.execute_script('setAction(1);')
 			self.click_at(x, y)
 		else:
 			string_valid = 0
