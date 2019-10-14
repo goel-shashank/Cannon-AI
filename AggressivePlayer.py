@@ -304,7 +304,7 @@ class AggressivePlayer:
 		moveOrBomb = 0
 		if aggressSoldier == (-1, -1, -1):
 			# No attacking position available - play a safe move
-			eprint ("No attacking position available - play a safe move")
+			eprint ("No attacking position available - Play a safe move")
 			flag = 0
 			for s in range(len(self.game.soldiers)):
 				sx, sy = self.game.soldiers[s].x, self.game.soldiers[s].y
@@ -325,16 +325,24 @@ class AggressivePlayer:
 						break
 
 			if flag == 0:
-				eprint ("No safe move available- Play random")
+				eprint ("No safe move available - Play random")
 				for s in range(len(self.game.soldiers)):
-					sx, sy = self.game.soldiers[s].x, self.game.soldiers[s].y
-					if(sx != -1 and sy != -1 and self.game.Guides(sx, sy) != 0):
+					x, y = self.game.soldiers[s].x, self.game.soldiers[s].y
+					exc = self.game.Guides(x, y)
+					if(x != -1 and y != -1 and exc != 0):
+						sx, sy = x, y
 						if (len(self.game.moves) != 0):
 							moveOrBomb = 0
-							mx, my = self.game.moves[0].x, self.game.moves[0].y
+							for move in self.game.moves:
+								if (move.x != -1 and move.y != -1):
+									mx, my = move.x, move.y
+									break
 						else:
 							moveOrBomb = 1
-							mx, my = self.game.bombs[0].x, self.game.bombs[0].y
+							for bomb in self.game.bombs:
+								if (bomb.x != -1 and bomb.y != -1):
+									mx, my = bomb.x, bomb.y
+									break
 		else:
 			# eprint ("Soldier chosen: " + str(aggressSoldier) + " with " + str(maxSeverity))
 			sx, sy = self.game.soldiers[aggressSoldier[0]].x, self.game.soldiers[aggressSoldier[0]].y
