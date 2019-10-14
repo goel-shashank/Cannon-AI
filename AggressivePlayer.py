@@ -284,6 +284,10 @@ class AggressivePlayer:
 			if (sx != -1 and sy != -1 and exc != 0):
 				for mi in range(len(self.game.moves)):
 					mx, my = self.game.moves[mi].x, self.game.moves[mi].y
+					# If townhall attack possible - Do that
+					if (self.player == 0 and self.game.board[mx][my] == -2) or (self.player == 1 and self.game.board[mx][my] == 2):
+						maxSeverity = 100000
+						aggressSoldier = (si, 0, mi)					
 					if (self.game.board[mx][my] == math.pow(-1, 1 - self.player)):
 						severity = self.GetSeverity(1 - self.player, mx, my)
 						if severity > maxSeverity:
@@ -293,6 +297,10 @@ class AggressivePlayer:
 				# eprint ("Bombs for " + str(sx) + ", " + str(sy) + ": " + str([str(x) for x in self.game.bombs]))
 				for bi in range(len(self.game.bombs)):
 					bx, by = self.game.bombs[bi].x, self.game.bombs[bi].y
+					# If townhall attack possible - Do that
+					if (self.player == 0 and self.game.board[bx][by] == -2) or (self.player == 1 and self.game.board[bx][by] == 2):
+						maxSeverity = 100000
+						aggressSoldier = (si, 1, bi)
 					if (self.game.board[bx][by] == math.pow(-1, 1 - self.player)):
 						severity = self.GetSeverity(1 - self.player, bx, by)
 						if severity > maxSeverity:
