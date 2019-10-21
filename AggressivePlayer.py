@@ -9,6 +9,7 @@ def eprint(*args, **kwargs):
 
 # Hyperparameter
 factor = 1.5
+max_blank_moves = 20
 
 class Pair():
 	def __init__(self, x, y):
@@ -230,6 +231,7 @@ class AggressivePlayer:
 		self.cols = int(data[2])
 		self.time_left = int(data[3])
 		self.game = Game(id = self.player, rows = self.rows, cols = self.cols)
+		self.num_blank_moves = 0
 		self.state = 0
 		self.play()
 
@@ -318,12 +320,14 @@ class AggressivePlayer:
 				sx, sy = self.game.soldiers[s].x, self.game.soldiers[s].y
 				if(sx != -1 and sy != -1 and self.game.Guides(sx, sy) != 0):
 					# Either make a safe move, or make empty bomb shot
-					if (len(self.game.bombs) != 0):
+					if (len(self.game.bombs) != 0 and self.num_blank_moves < max_blank_moves):
 						moveOrBomb = 1
 						mx, my = self.game.bombs[0].x, self.game.bombs[0].y
+						self.num_blank_moves += 1
 						flag = 1
 					else:
 						moveOrBomb = 0
+						self.num_blank_moves = 0
 						for m in range(len(self.game.moves)):
 							mx, my = self.game.moves[m].x, self.game.moves[m].y
 							if(mx != -1 and my != -1 and self.GetSeverity(self.player, mx, my) == 0):
@@ -334,6 +338,7 @@ class AggressivePlayer:
 
 			if flag == 0:
 				eprint ("No safe move available - Play random")
+				self.num_blank_moves = 0
 				for s in range(len(self.game.soldiers)):
 					x, y = self.game.soldiers[s].x, self.game.soldiers[s].y
 					exc = self.game.Guides(x, y)
@@ -356,6 +361,7 @@ class AggressivePlayer:
 			sx, sy = self.game.soldiers[aggressSoldier[0]].x, self.game.soldiers[aggressSoldier[0]].y
 			self.game.Guides(sx, sy)
 			moveOrBomb = aggressSoldier[1]
+			self.num_blank_moves = 0
 			if moveOrBomb == 0:
 				mx, my = self.game.moves[aggressSoldier[2]].x, self.game.moves[aggressSoldier[2]].y
 			else:
