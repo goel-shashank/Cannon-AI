@@ -223,7 +223,7 @@ class Game():
 
 		return status
 
-class DefensivePlayer:
+class NeutralPlayer:
 	def __init__(self):
 		data = sys.stdin.readline().strip().split()
 		self.player = int(data[0]) - 1
@@ -244,8 +244,10 @@ class DefensivePlayer:
 		enemies = [(-2, 2), (-1, -1), (-1, 0), (0, -1), (0, 2), (1, -1), (1, 0), (2, 2)]
 		for enemy in enemies:
 			ex, ey = x + enemy[0], y + direction*enemy[1]
+			# eprint ("Checking for coordinate " + str(ex) + ", " + str(ey))
 			if self.game.IsInBoard(ex, ey) and (self.game.board[ex][ey] == math.pow(-1, 1 - self.player)):
 				# Enemy can attack - move from current position.
+				# eprint ("Found attack")
 				severity += 1
 
 		# Check if soldier can be attacked by any cannon
@@ -255,8 +257,10 @@ class DefensivePlayer:
 			for blank in blanks:
 				# First check if cannon attack is even possible from this direction
 				cx, cy = x + cannon[0]*(blank - 1), y + cannon[1]*(blank - 1)
+				# eprint ("Checking for cannon at " + str(x + cannon[0]*blank) + ", " + str(y + cannon[1]*blank))
 				if self.game.IsInBoard(cx, cy) and self.game.board[cx][cy] == 0:
 					# If cannon attack possible, check if cannon exists or not
+					# eprint ("Attack possible - checking if cannon exists")
 					flag = True
 					for i in range(3):
 						ex, ey = x + cannon[0]*(i + blank), y + cannon[1]*(i + blank)
@@ -266,7 +270,7 @@ class DefensivePlayer:
 						break
 					if flag:
 						# Cannon Present
-						# eprint ("Found Cannon attacking " + str(idx) + ", " + str(idy))
+						# eprint ("Found attack")
 						severity += 1
 
 		# Assign higher severity to soldiers who are nearer to Townhalls
@@ -422,4 +426,4 @@ class DefensivePlayer:
 			self.game.execute_move(move)
 
 random.seed(0)
-DefensivePlayer()
+NeutralPlayer()

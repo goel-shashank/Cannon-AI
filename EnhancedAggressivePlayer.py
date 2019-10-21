@@ -223,7 +223,7 @@ class Game():
 
 		return status
 
-class AggressivePlayer:
+class EnhancedAggressivePlayer:
 	def __init__(self):
 		data = sys.stdin.readline().strip().split()
 		self.player = int(data[0]) - 1
@@ -320,26 +320,44 @@ class AggressivePlayer:
 		mx, my = -1, -1
 		moveOrBomb = 0
 		if aggressSoldier == (-1, -1, -1):
-			# No attacking position available - play a safe move
+			# No attacking position available - play a safe move (Prefer to move forward)
+      # Provide a motivation to move towards enemy townhall
 			eprint ("No attacking position available - Play a safe move")
 			flag = 0
+
+			# Try to make a safe forward move. If not possible, make empty bomb shot or make a safe backward move
+			eprint ("Trying a forward safe move")
 			for s in range(len(self.game.soldiers)):
 				sx, sy = self.game.soldiers[s].x, self.game.soldiers[s].y
 				if(sx != -1 and sy != -1 and self.game.Guides(sx, sy) != 0):
-					# Either make a safe move, or make empty bomb shot
-					if (len(self.game.bombs) != 0 and self.num_blank_moves < max_blank_moves):
-						moveOrBomb = 1
-						mx, my = self.game.bombs[0].x, self.game.bombs[0].y
-						self.num_blank_moves += 1
-						flag = 1
-					else:
-						moveOrBomb = 0
-						self.num_blank_moves = 0
-						for m in range(len(self.game.moves)):
-							mx, my = self.game.moves[m].x, self.game.moves[m].y
-							if(mx != -1 and my != -1 and self.GetSeverity(self.player, mx, my) == 0):
-								flag = 1
-								break
+					for m in range(len(self.game.moves)):
+						mx, my = self.game.moves[m].x, self.game.moves[m].y
+						severity = self.GetSeverity(self.player, mx, my)
+						if(mx != -1 and my != -1 and severity == 0 and (my-sy)*self.game.direction < 0):
+							moveOrBomb = 0
+							flag = 1
+							break
+					if flag == 1:
+						break
+
+			if flag == 0:
+				eprint ("Forward safe move not available - Empty bomb shot or safe backward move")
+				for s in range(len(self.game.soldiers)):
+					sx, sy = self.game.soldiers[s].x, self.game.soldiers[s].y
+					if(sx != -1 and sy != -1 and self.game.Guides(sx, sy) != 0):
+						if (len(self.game.bombs) != 0 and self.num_blank_moves < max_blank_moves):
+							moveOrBomb = 1
+							mx, my = self.game.bombs[0].x, self.game.bombs[0].y
+							self.num_blank_moves += 1
+							flag = 1
+						else:
+							moveOrBomb = 0
+							self.num_blank_moves = 0
+							for m in range(len(self.game.moves)):
+								mx, my = self.game.moves[m].x, self.game.moves[m].y
+								if(mx != -1 and my != -1 and self.GetSeverity(self.player, mx, my) == 0):
+									flag = 1
+									break
 					if flag == 1:
 						break
 
@@ -420,4 +438,4 @@ class AggressivePlayer:
 			self.game.execute_move(move)
 
 random.seed(0)
-AggressivePlayer()
+EnhancedAggressivePlayer()
