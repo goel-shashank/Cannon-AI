@@ -10,6 +10,7 @@ def eprint(*args, **kwargs):
 
 # Hyperparameter
 factor = 1.5
+max_blank_moves = 20
 
 class Pair():
 	def __init__(self, x, y):
@@ -230,6 +231,7 @@ class NeutralPlayer:
 		self.rows = int(data[1])
 		self.cols = int(data[2])
 		self.time_left = int(data[3])
+		self.num_blank_moves = 0
 		self.game = Game(id = self.player, rows = self.rows, cols = self.cols)
 		self.state = 0
 		self.play()
@@ -326,6 +328,7 @@ class NeutralPlayer:
 						severeSoldier = j
 		
 		if flag == 1:
+			self.num_blank_moves = 0
 			return sx, sy, mx, my, moveOrBomb
 		else:
 			sx, sy = self.game.soldiers[severeSoldier].x, self.game.soldiers[severeSoldier].y
@@ -363,13 +366,18 @@ class NeutralPlayer:
 					# Choose a bomb shot
 					moveOrBomb = 1
 					mx, my = self.game.bombs[0].x, self.game.bombs[0].y
+					attackCannon = 0
 					for i in range(len(self.game.bombs)):
 						bx, by = self.game.bombs[i].x, self.game.bombs[i].y
 						if (bx != -1 and by != -1 and self.game.board[bx][by] == math.pow(-1, 1 - self.player)):
+							attackCannon = 1
 							mx, my = bx, by
 							break
+					if attackCannon == 0:
+						self.num_blank_moves += 1
 				else:
 					# Choose a move that can attack some enemy
+					self.num_blank_moves = 0
 					if attackMove != (-1, -1):
 						moveOrBomb = 0
 						mx, my = attackMove[0], attackMove[1]
@@ -378,7 +386,24 @@ class NeutralPlayer:
 						mx, my = self.game.moves[bestMove].x, self.game.moves[bestMove].y
 			else:
 				moveOrBomb = 0
+				self.num_blank_moves += 1
 				mx, my = self.game.moves[bestMove].x, self.game.moves[bestMove].y
+
+		if self.num_blank_moves >= max_blank_moves:
+			# Choose a random move for any soldier
+			flag = 0
+			for si in range(len(self.game.soldiers)):
+				sx, sy = self.game.soldiers[si].x, self.game.soldiers[si].y
+				exc = self.game.Guides(sx, sy)
+				if (sx != -1 and sy != -1 and exc != 0):
+					for mi in range(len(self.game.moves)):
+						mx, my = self.game.moves[mi].x, self.game.moves[mi].y
+						if (mx != -1 and my != -1):
+							moveOrBomb = 0
+							flag = 1
+							break
+					if flag == 1:
+						break
 
 		return sx, sy, mx, my, moveOrBomb
 

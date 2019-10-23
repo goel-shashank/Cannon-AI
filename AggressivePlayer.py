@@ -334,11 +334,11 @@ class AggressivePlayer:
 						flag = 1
 					else:
 						moveOrBomb = 0
-						self.num_blank_moves = 0
 						for m in range(len(self.game.moves)):
 							mx, my = self.game.moves[m].x, self.game.moves[m].y
 							if(mx != -1 and my != -1 and self.GetSeverity(self.player, mx, my) == 0):
 								flag = 1
+								self.num_blank_moves = 0
 								break
 					if flag == 1:
 						break
