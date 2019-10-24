@@ -9,7 +9,7 @@ def eprint(*args, **kwargs):
 
 # Hyperparameter
 factor = 1.5
-max_blank_moves = 5
+max_safe_moves = 8
 
 class Pair():
 	def __init__(self, x, y):
@@ -231,7 +231,7 @@ class AggressivePlayer:
 		self.cols = int(data[2])
 		self.time_left = int(data[3])
 		self.game = Game(id = self.player, rows = self.rows, cols = self.cols)
-		self.num_blank_moves = 0
+		self.num_safe_moves = 0
 		self.state = 0
 		self.play()
 
@@ -323,29 +323,55 @@ class AggressivePlayer:
 			# No attacking position available - play a safe move
 			eprint ("No attacking position available - Play a safe move")
 			flag = 0
+			minSeverity = 100000
+			mins, minm = (-1, -1), (-1, -1)
+			safes, safem = (-1, -1), (-1, -1)
 			for s in range(len(self.game.soldiers)):
 				sx, sy = self.game.soldiers[s].x, self.game.soldiers[s].y
 				if(sx != -1 and sy != -1 and self.game.Guides(sx, sy) != 0):
 					# Either make a safe move, or make empty bomb shot
-					if (len(self.game.bombs) != 0 and self.num_blank_moves < max_blank_moves):
-						moveOrBomb = 1
-						mx, my = self.game.bombs[0].x, self.game.bombs[0].y
-						self.num_blank_moves += 1
+					if (len(self.game.bombs) != 0 and self.num_safe_moves < max_safe_moves):
 						flag = 1
+						moveOrBomb = 1
+						self.num_safe_moves += 1
+						mx, my = self.game.bombs[0].x, self.game.bombs[0].y
 					else:
 						moveOrBomb = 0
 						for m in range(len(self.game.moves)):
 							mx, my = self.game.moves[m].x, self.game.moves[m].y
-							if(mx != -1 and my != -1 and self.GetSeverity(self.player, mx, my) == 0):
-								flag = 1
-								self.num_blank_moves = 0
-								break
+							if(self.num_safe_moves < max_safe_moves):								
+								if(mx != -1 and my != -1 and self.GetSeverity(self.player, mx, my) == 0):
+									flag = 1
+									self.num_safe_moves += 1
+									break
+							else:
+								if(mx != -1 and my != -1):
+									severity = self.GetSeverity(self.player, mx, my)
+									if(severity != 0 and severity < minSeverity):
+										minSeverity = severity
+										mins = (sx, sy)
+										minm = (mx, my)
+									elif(severity == 0):
+										safes = (sx, sy)
+										safem = (mx, my)
 					if flag == 1:
 						break
 
+			if flag == 0 and (mins != (-1, -1) or safes != (-1, -1)):
+				eprint ("No safe move available - Play least damage move")
+				self.num_safe_moves = 0
+				moveOrBomb = 0
+				if mins == (-1, -1):
+					sx, sy = safes[0], safes[1]
+					mx, my = safem[0], safem[1]
+				else:
+					sx, sy = mins[0], mins[1]
+					mx, my = minm[0], minm[1]
+				flag = 1
+			
 			if flag == 0:
-				eprint ("No safe move available - Play random")
-				self.num_blank_moves = 0
+				eprint ("Can't avoid random move now")
+				self.num_safe_moves = 0
 				for s in range(len(self.game.soldiers)):
 					x, y = self.game.soldiers[s].x, self.game.soldiers[s].y
 					exc = self.game.Guides(x, y)
@@ -368,7 +394,7 @@ class AggressivePlayer:
 			sx, sy = self.game.soldiers[aggressSoldier[0]].x, self.game.soldiers[aggressSoldier[0]].y
 			self.game.Guides(sx, sy)
 			moveOrBomb = aggressSoldier[1]
-			self.num_blank_moves = 0
+			self.num_safe_moves = 0
 			if moveOrBomb == 0:
 				mx, my = self.game.moves[aggressSoldier[2]].x, self.game.moves[aggressSoldier[2]].y
 			else:
