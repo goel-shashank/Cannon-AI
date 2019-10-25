@@ -15,7 +15,7 @@ The assignment documentation can be found [here](http://www.cse.iitd.ac.in/~maus
 The rules of the original game can be found [here](https://nestorgames.com/rulebooks/CANNON_EN.pdf)
 
 ### Stalemate
-**Case 1**: Player A(or B) kills the last soldier of Player B(or A).
+**Case 1**: Player A(or B) kills the last soldier of Player B(or A).  
 **Case 2**: Both Players have soldiers left, but Player B(or A) has no immediate moves to play
 
 ### Stagnant Game
@@ -29,7 +29,9 @@ If exactly the same board position is repeated thrice after the move of a player
 + Numpy
 + Selenium
 
-`pip install -r requirements.txt`
+```sh
+pip install -r requirements.txt
+```
 
 Download the chrome driver executable according to your chrome version from the following link:
 https://chromedriver.chromium.org/downloads
@@ -51,7 +53,7 @@ You can check you chrome version following the steps below:
   > `port` (mandatory) - The Server Port.  
   > `ip` (optional) - The Server IP. Default: 0.0.0.0   
   > `n` (optional) - The Board Row Size. Default: 8  
-  > 'm' (optional) - The Board Column Size. Default: 8
+  > `m` (optional) - The Board Column Size. Default: 8  
   > `NC` (optional) - Number of Clients. Default: 2  
   > `TL` (optional) - Time Limit. Default:150  
   > `LOG` (optional) - The Log File.  
@@ -59,24 +61,29 @@ You can check you chrome version following the steps below:
 ## Run Instructions
 Here are the sample instructions used to match two random players against each other over the server network.
 ### Setup Server
-`python server.py 10000 -n 8 -m 8 -NC 2 -TL 150 -LOG server.log`
+```sh
+python server.py 10000 -n 8 -m 8 -NC 2 -TL 150 -LOG server.log
+```
 ### Setup Client 1
-`export PATH=$PATH:'/home/chrome_driver_directory'`
+```sh
+export PATH=$PATH:'/home/chrome_driver_directory_path'
+python client.py 0.0.0.0 10000 RandomPlayer.py -mode GUI
+```
 
-`python client.py 0.0.0.0 10000 RandomPlayer.py -mode GUI`
 ### Setup Client 2
-`export PATH=$PATH:'/home/chrome_driver_directory'`
-
-`python client.py 0.0.0.0 10000 RandomPlayer.py`
+```sh
+export PATH=$PATH:'/home/chrome_driver_directory_path'
+python client.py 0.0.0.0 10000 RandomPlayer.py
+```
 
 ## Gameplay
 The game play consists of the players executing a sequence of moves in a single turn.
 A move is a triple: `type` `x` `y`.  
 
 ### Movetype
-+ S - Select a soldier
-+ M - Move a soldier
-+ B - Throw a Bomb
++ `S` - Select a soldier
++ `M` - Move a soldier
++ `B` - Throw a Bomb
 
 ### Board Settings
 The board is an n x m board.
@@ -85,20 +92,19 @@ The horizontal direction towards the right is the positive x-axis.
 The vertical direction towards down is the positive y-axis.
 The indexing begins with 0 in both the directions.
 
-#### Moving a Soldier
-To move a soldier from (1, 2) to (2, 4).
-
+#### Move a Soldier
+To move a soldier from (1, 2) to (2, 4).  
 `S 1 2 M 2 4`
 
-#### Throwing a Bomb
-To throw a bomb, select any of the soldiers of a cannon, and throw it at any viable target of the cannon(s) formed by that soldier.
-
+#### Throw a Bomb
+To throw a bomb, select any of the soldiers of a cannon, and throw it at any viable target of the cannon(s) formed by that soldier.  
 `S 2 4 B 6 4`
 
 ### Replay
 A server.log file is created during the gameplay that consist of the moves played in the game. You can simulate/re-run it using the following command:
-
-`python game.py server.log`
+```sh
+python game.py server.log
+```
 
 ## Scoring
 At the end of a game both players will be given a score. The scoring for all the three configurations of the game will be as follows: 
@@ -148,10 +154,10 @@ Note) In case a player suffers a TIMEOUT or INVALID move, it will automatically 
 
 ### The Army Margin
 This score directly depends on the number of soldiers you have left at the end of the game. It is calculated as follows:  
-`Army Margin Score = # (Soldiers Remaining) / 100`
+```Army Margin Score = # (Soldiers Remaining) / 100```
 
 ### Final Score
-The final score is simply: `(Town Hall Margin Score).(Army Margin Score)`
+The final score is simply: ```(Town Hall Margin Score).(Army Margin Score)```
 Example. Assume the following:  
 Player 1 killed 2 Town Halls and has 12 soldiers left on the board.  
 Player 2 killed 1 Town Hall and has 9 soldiers left on the board.  
