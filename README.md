@@ -14,9 +14,16 @@ The assignment documentation can be found [here](http://www.cse.iitd.ac.in/~maus
 ## Rules
 The rules of the original game can be found [here](https://nestorgames.com/rulebooks/CANNON_EN.pdf)
 
+### Piazza discussions:  
++ The soldier can retreat back if and only if it is adjacent to an enemy soldier.
++ The soldier can kill an enemy soldier or a townhall in a retreat step.
++ Cannon shifts along its length cannot capture a soldier or a townhall.
++ Blank cannon shots are allowed (take care of stagnant game) and are considered valid moves.
+
+
 ### Stalemate
-**Case 1**: Player A(or B) kills the last soldier of Player B(or A).  
-**Case 2**: Both Players have soldiers left, but Player B(or A) has no immediate moves to play
+**Case 1**: Player A (or B) kills the last soldier of Player B (or A).  
+**Case 2**: Both Players have soldiers left, but Player B (or A) has no immediate moves to play
 
 ### Stagnant Game
 If exactly the same board position is repeated thrice after the move of a player then the player is said to have forced a  Stagnant Game.
@@ -60,6 +67,7 @@ You can check you chrome version following the steps below:
 
 ## Run Instructions
 Here are the sample instructions used to match two random players against each other over the server network.
+
 ### Setup Server
 ```sh
 python server.py 10000 -n 8 -m 8 -NC 2 -TL 150 -LOG server.log
@@ -86,7 +94,7 @@ A move is a triple: `type` `x` `y`.
 + `B` - Throw a Bomb
 
 ### Board Settings
-The board is an n x m board.
+The board is an **n x m** board.
 The top-left corner point is the origin.
 The horizontal direction towards the right is the positive x-axis.
 The vertical direction towards down is the positive y-axis.
@@ -97,7 +105,7 @@ To move a soldier from (1, 2) to (2, 4).
 `S 1 2 M 2 4`
 
 #### Throw a Bomb
-To throw a bomb, select any of the soldiers of a cannon, and throw it at any viable target of the cannon(s) formed by that soldier.  
+To throw a bomb, select any of the soldiers of a cannon, and throw it at any viable target of the cannon(s).  
 `S 2 4 B 6 4`
 
 ### Replay
@@ -150,7 +158,7 @@ Player A forced a Stagnant Game.
 
 #### Timeout or Invalid Move
 
-Note) In case a player suffers a TIMEOUT or INVALID move, it will automatically lose the game and it will count as a (2-*x*) defeat towards the player and a (*x*-2) win for the opponent, where *x* is the number of Town Halls killed by the opponent. 
+**Note:** In case a player suffers a TIMEOUT or INVALID move, it will automatically lose the game and it will count as a (2 - *x*) defeat towards the player and a (*x* - 2) win for the opponent, where *x* is the number of Town Halls killed by the opponent. 
 
 ### The Army Margin
 This score directly depends on the number of soldiers you have left at the end of the game. It is calculated as follows:  
