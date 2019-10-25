@@ -292,7 +292,7 @@ def game_loop(args):
 			message['data'] = move['data']
 			message['meta'] = 'Player ' +  str(player_id) + ' SCORE : ' + str(game.get_score(player_id)) +  \
 							' : Player ' +  str(int(player_id)%2+1) + ' SCORE : ' + str(game.get_score(int(player_id)%2+1))
-			print('YOU WIN!')
+			# print('YOU WIN!')
 			if player_id == '1':
 				print('Your Score : ' + str(game.get_score(1)))
 				print('Opponent\'s Score : ' + str(game.get_score(2)))
@@ -314,7 +314,7 @@ def game_loop(args):
 				print("Player 1 played : " + move)
 			success = game.execute_move(move)
 			if success == 2:
-				print('OTHER PLAYER WINS!')
+				# print('OTHER PLAYER WINS!')
 				if player_id == '1':
 					print('Your Score : ' + str(game.get_score(1)))
 					print('Opponent\'s Score : ' + str(game.get_score(2)))

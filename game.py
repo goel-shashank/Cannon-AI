@@ -90,77 +90,91 @@ class Game:
 
 	def calculate_score(self, tA, tB, sA, sB, error_state):
 		if(error_state == '1'):
-			tA = 2
-		elif(error_state == '2'):
 			tB = 2
+		elif(error_state == '2'):
+			tA = 2
 
-		if(tA == 4 and tB == 2):
+		if(tA == 2 and tB == 0):
 			scoreA = 10
 			scoreB = 0
-		elif(tA == 3 and tB == 2):
+		elif(tA == 2 and tB == 1):
 			scoreA = 8
 			scoreB = 2
-		elif(tA == 2 and tB == 3):
+		elif(tA == 1 and tB == 2):
 			scoreA = 2
 			scoreB = 8
-		elif(tA == 2 and tB == 4):
+		elif(tA == 0 and tB == 2):
 			scoreA = 0
 			scoreB = 10
 		else:
-			if(self.get_current_player() == 1):
-				if(self.driver.execute_script('return player[current_player].soldiers.length;') == 0):
-					if(tA == 4 and tB == 3):
-						scoreA = 10
-						scoreB = 0
-					elif(tA == 4 and tB == 4):
-						scoreA = 8
-						scoreB = 2
-					elif(tA == 3 and tB == 3):
-						scoreA = 8
-						scoreB = 2
-					elif(tA == 3 and tB == 4):
-						scoreA = 6
-						scoreB = 4
-				else:
-					if(tA == 4 and tB == 3):
-						scoreA = 8
-						scoreB = 2
-					elif(tA == 4 and tB == 4):
-						scoreA = 6
-						scoreB = 4
-					elif(tA == 3 and tB == 3):
-						scoreA = 6
-						scoreB = 4
-					elif(tA == 3 and tB == 4):
-						scoreA = 4
-						scoreB = 6
+			if(self.check_stagnant()):
+				if(tA == 1 and tB == 0):
+					scoreA = 7
+					scoreB = 3
+				elif(tA == 0 and tB == 0):
+					scoreA = 5
+					scoreB = 5
+				elif(tA == 1 and tB == 1):
+					scoreA = 5
+					scoreB = 5
+				elif(tA == 0 and tB == 1):
+					scoreA = 3
+					scoreB = 7
 			else:
-				if(self.driver.execute_script('return player[current_player].soldiers.length;') == 0):
-					if(tA == 4 and tB == 3):
-						scoreA = 4
-						scoreB = 6
-					elif(tA == 4 and tB == 4):
-						scoreA = 2
-						scoreB = 8
-					elif(tA == 3 and tB == 3):
-						scoreA = 2
-						scoreB = 8
-					elif(tA == 3 and tB == 4):
-						scoreA = 0
-						scoreB = 10
+				if(self.get_current_player() == 1):
+					if(self.driver.execute_script('return player[current_player].soldiers.length;') == 0):
+						if(tA == 1 and tB == 0):
+							scoreA = 10
+							scoreB = 0
+						elif(tA == 0 and tB == 0):
+							scoreA = 8
+							scoreB = 2
+						elif(tA == 1 and tB == 1):
+							scoreA = 8
+							scoreB = 2
+						elif(tA == 0 and tB == 1):
+							scoreA = 6
+							scoreB = 4
+					else:
+						if(tA == 1 and tB == 0):
+							scoreA = 8
+							scoreB = 2
+						elif(tA == 0 and tB == 0):
+							scoreA = 6
+							scoreB = 4
+						elif(tA == 1 and tB == 1):
+							scoreA = 6
+							scoreB = 4
+						elif(tA == 0 and tB == 1):
+							scoreA = 4
+							scoreB = 6
 				else:
-					if(tA == 4 and tB == 3):
-						scoreA = 6
-						scoreB = 4
-					elif(tA == 4 and tB == 4):
-						scoreA = 4
-						scoreB = 6
-					elif(tA == 3 and tB == 3):
-						scoreA = 4
-						scoreB = 6
-					elif(tA == 3 and tB == 4):
-						scoreA = 2
-						scoreB = 8
+					if(self.driver.execute_script('return player[current_player].soldiers.length;') == 0):
+						if(tA == 1 and tB == 0):
+							scoreA = 4
+							scoreB = 6
+						elif(tA == 0 and tB == 0):
+							scoreA = 2
+							scoreB = 8
+						elif(tA == 1 and tB == 1):
+							scoreA = 2
+							scoreB = 8
+						elif(tA == 0 and tB == 1):
+							scoreA = 0
+							scoreB = 10
+					else:
+						if(tA == 1 and tB == 0):
+							scoreA = 6
+							scoreB = 4
+						elif(tA == 0 and tB == 0):
+							scoreA = 4
+							scoreB = 6
+						elif(tA == 1 and tB == 1):
+							scoreA = 4
+							scoreB = 6
+						elif(tA == 0 and tB == 1):
+							scoreA = 2
+							scoreB = 8
 
 		scoreA = scoreA + float(sA) / 100.0
 		scoreB = scoreB + float(sB) / 100.0
@@ -187,11 +201,17 @@ class Game:
 				elif(piece == -2):
 					townhallsB += 1
 
+		townhallsA = self.cols / 2 - townhallsA
+		townhallsB = self.cols / 2 - townhallsB
 		return self.calculate_score(townhallsA, townhallsB, soldiersA, soldiersB, error_state)[int(id) - 1]
 
 	def check_finished(self):
 		required_move = self.driver.execute_script('return required_move;')
 		return (required_move == 2)
+
+	def check_stagnant(self):
+		is_stagnant = self.driver.execute_script('return is_stagnant;')
+		return (is_stagnant == 1)
 
 	def sign(self, x):
 		if(x == 0):
@@ -222,7 +242,7 @@ class Game:
 	## Move types
 	# S - Select a Soldier
 	# M - Move a soldier
-	# B - Bombard a shot
+	# B - Throw a Bomb
 
 	"""
 	def execute_move(self, cmd) :
@@ -253,10 +273,11 @@ class Game:
 
 		move_valid = self.check_move_validity()
 		finished = self.check_finished()
+		stagnant = self.check_stagnant()
 
 		if(not (string_valid and move_valid)):
 			success = 0
-		elif(finished):
+		elif(finished or stagnant):
 			success = 2
 
 		return success
