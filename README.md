@@ -3,7 +3,7 @@ Simulator supporting a user interface for Cannon, an abstract strategy board gam
 
 ## Details
 This is a course assignment for the graduate-level Artificial Intelligence course taught by [**Prof. Mausam**](http://homes.cs.washington.edu/~mausam).  
-The assignment documentation can be found [here](http://www.cse.iitd.ac.in/~mausam/courses/col333/autumn2019/A2/A2.pdf)
+The assignment documentation can be found [here](http://www.cse.iitd.ac.in/~mausam/courses/col333/autumn2019/A5/A5.pdf)
 
 ### Teaching Assistants
 + [Divyanshu Saxena](https://github.com/DivyanshuSaxena)
@@ -14,7 +14,19 @@ The assignment documentation can be found [here](http://www.cse.iitd.ac.in/~maus
 ## Rules
 The rules of the original game can be found [here](https://nestorgames.com/rulebooks/CANNON_EN.pdf)
 
-However, we will be having an 8x8 board and 4 Town Halls instead of 1. The position of the Town Halls is fixed. Further instructions are mentioned in the Assignment Document.
+### Piazza discussions:  
++ The soldier can retreat back if and only if it is adjacent to an enemy soldier.
++ The soldier can kill an enemy soldier or a townhall in a retreat step.
++ Cannon shifts along its length cannot capture a soldier or a townhall.
++ Blank cannon shots are allowed (take care of stagnant game) and are considered valid moves.
+
+
+### Stalemate
+Case 1: Player A (or B) kills the last soldier of Player B (or A).  
+Case 2: Both Players have soldiers left, but Player B (or A) has no immediate moves to play
+
+### Stagnant Game
+If exactly the same board position is repeated thrice after the move of a player then the player is said to have forced a  Stagnant Game.
 
 ## Dependencies
 + Python2.7
@@ -24,7 +36,9 @@ However, we will be having an 8x8 board and 4 Town Halls instead of 1. The posit
 + Numpy
 + Selenium
 
-`pip install -r requirements.txt`
+```sh
+pip install -r requirements.txt
+```
 
 Download the chrome driver executable according to your chrome version from the following link:
 https://chromedriver.chromium.org/downloads
@@ -45,101 +59,115 @@ You can check you chrome version following the steps below:
 + `server.py` - This connects the clients and manages the transfer of information.
   > `port` (mandatory) - The Server Port.  
   > `ip` (optional) - The Server IP. Default: 0.0.0.0   
-  > `n` (optional) - The Board Size. Default: 8  
+  > `n` (optional) - The Board Row Size. Default: 8  
+  > `m` (optional) - The Board Column Size. Default: 8  
   > `NC` (optional) - Number of Clients. Default: 2  
   > `TL` (optional) - Time Limit. Default:150  
   > `LOG` (optional) - The Log File.  
 
 ## Run Instructions
 Here are the sample instructions used to match two random players against each other over the server network.
+
 ### Setup Server
-`python server.py 10000 -n 8 -m 8 -NC 2 -TL 150 -LOG server.log`
+```sh
+python server.py 10000 -n 8 -m 8 -NC 2 -TL 150 -LOG server.log
+```
 ### Setup Client 1
-`export PATH=$PATH:'/home/chrome_driver_directory'`
+```sh
+export PATH=$PATH:'/home/chrome_driver_directory_path'
+python client.py 0.0.0.0 10000 RandomPlayer.py -mode GUI
+```
 
-`python client.py 0.0.0.0 10000 RandomPlayer.py -mode GUI`
 ### Setup Client 2
-`export PATH=$PATH:'/home/chrome_driver_directory'`
-
-`python client.py 0.0.0.0 10000 RandomPlayer.py`
+```sh
+export PATH=$PATH:'/home/chrome_driver_directory_path'
+python client.py 0.0.0.0 10000 RandomPlayer.py
+```
 
 ## Gameplay
 The game play consists of the players executing a sequence of moves in a single turn.
 A move is a triple: `type` `x` `y`.  
 
 ### Movetype
-+ S - Select a soldier
-+ M - Move a soldier
-+ B - Throw a Bomb
++ `S` - Select a soldier
++ `M` - Move a soldier
++ `B` - Throw a Bomb
 
 ### Board Settings
-The board is an n x m board.
+The board is an **n x m** board.
 The top-left corner point is the origin.
 The horizontal direction towards the right is the positive x-axis.
 The vertical direction towards down is the positive y-axis.
 The indexing begins with 0 in both the directions.
 
-#### Moving a Soldier
-To move a soldier from (1, 2) to (2, 4).
-
+#### Move a Soldier
+To move a soldier from (1, 2) to (2, 4).  
 `S 1 2 M 2 4`
 
-#### Throwing a Bomb
-To throw a bomb, select any of the soldiers of a cannon, and throw it at any viable target of the cannon(s) formed by that soldier.
-
+#### Throw a Bomb
+To throw a bomb, select any of the soldiers of a cannon, and throw it at any viable target of the cannon(s).  
 `S 2 4 B 6 4`
 
 ### Replay
 A server.log file is created during the gameplay that consist of the moves played in the game. You can simulate/re-run it using the following command:
-
-`python game.py server.log`
+```sh
+python game.py server.log
+```
 
 ## Scoring
-At the end of a game both players will be given a score.
+At the end of a game both players will be given a score. The scoring for all the three configurations of the game will be as follows: 
 
 ### The Town Hall Margin
 This score will be based on the extent of victory. It is calculated as follows:  
 
-|Town Halls Left: A	|Town Halls Left: B	|Town Hall Margin Score: A	|Town Hall Margin Score: B|
+|Town Halls killed by A	|Town Halls killed by B	|Town Hall Margin Score: A	|Town Hall Margin Score: B|
 | ------------- | ------------- | ------------- | ------------- | 
-| 4 | 2 | 10 | 0 |
-| 3 | 2 | 8 | 2 |
+| 2 | 0 | 10 | 0 |
+| 2 | 1 | 8  | 2 |
 
+#### Stalemate
 
-#### Condition for Stalemate
+**Case 1**: Player A kills the last soldier of Player B.
 
-**Case 1**: Player B has lost all its soldiers and Player A still has moves to play.
-
-|Town Halls Left: A	|Town Halls Left: B	|Town Hall Margin Score: A	|Town Hall Margin Score: B|
+|Town Halls killed by A	|Town Halls killed by B	|Town Hall Margin Score: A	|Town Hall Margin Score: B|
 | ------------- | ------------- | ------------- | ------------- | 
-| 4 |	3 |	10 |	0 |
-| 4 |	4 |	8 |	2 |
-| 3 |	3 |	8 |	2 |
-| 3 |	4 |	6 |	4 |
+| 1 |	0 |	10 |	0 |
+| 0 |	0 |	8  |	2 |
+| 1 |	1 |	8  |	2 |
+| 0 |	1 |	6  |	4 |
 
 **Case 2**: Both Players have soldiers left, but Player B has no immediate moves to play
 
-|Town Halls Left: A	|Town Halls Left: B	|Town Hall Margin Score: A	|Town Hall Margin Score: B|
+|Town Halls killed by A	|Town Halls killed by B	|Town Hall Margin Score: A	|Town Hall Margin Score: B|
 | ------------- | ------------- | ------------- | ------------- | 
-| 4 |	3 |	8 |	2 |
-| 4 |	4 |	6 |	4 |
-| 3 |	3 |	6 |	4 |
-| 3 |	4 |	4 |	6 |
+| 1 |	0 |	8 |	2 |
+| 0 |	0 |	6 |	4 |
+| 1 |	1 |	6 |	4 |
+| 4 |	3 |	4 |	6 |
+
+#### Stagnant Game
+
+Player A forced a Stagnant Game.
+
+|Town Halls killed by A	|Town Halls killed by B	|Town Hall Margin Score: A	|Town Hall Margin Score: B|
+| ------------- | ------------- | ------------- | ------------- | 
+| 1 |	0 |	7 |	3 |
+| 0 |	0 |	5 |	5 |
+| 1 |	1 |	5 |	5 |
+| 0 |	1 |	3 |	7 |
 
 #### Timeout or Invalid Move
 
-Note) In case a player suffers a TIMEOUT or INVALID move, he/she will automatically lose the gane and it will count as a (2-*x*) defeat towards the player and a (*x*-2) win for the opponent, where *x* is the number of Town Halls remaining with the opponent.
+**Note:** In case a player suffers a TIMEOUT or INVALID move, it will automatically lose the game and it will count as a (2 - *x*) defeat towards the player and a (*x* - 2) win for the opponent, where *x* is the number of Town Halls killed by the opponent. 
 
 ### The Army Margin
 This score directly depends on the number of soldiers you have left at the end of the game. It is calculated as follows:  
-`Army Margin Score = # (Soldiers Remaining) / 100`
+```Army Margin Score = # (Soldiers Remaining) / 100```
 
 ### Final Score
-The final score is simply: `(Town Hall Margin Score).(Army Margin Score)`
+The final score is simply: ```(Town Hall Margin Score).(Army Margin Score)```
 Example. Assume the following:  
-Player 1 has 3 Town Halls remaining and has 12 soldiers left on the board.  
-Player 2 has 2 Town Hall remaining and has 9 soldiers left on the board.  
+Player 1 killed 2 Town Halls and has 12 soldiers left on the board.  
+Player 2 killed 1 Town Hall and has 9 soldiers left on the board.  
 Player 1 score will be: **8.12**  
 Player 2 score will be: **2.09**  
-
-
