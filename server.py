@@ -191,8 +191,8 @@ if __name__ == '__main__':
         parser.add_argument('-TL', dest = 'time_limit', metavar = 'time_limit', type = int, default = 120, help = 'Time limit (in s)')
         parser.add_argument('-LOG',dest = 'log_file', metavar = 'log_file', type = str, default = "", help = 'Logger File for Evaluation purposes')
         args = parser.parse_args()
-        if(args.n != 8 or args.m != 8):
-                print('Board size should be 8 x 8')
+        if(not((args.n == 8 and args.m == 8) or (args.n == 10 and args.m == 8) or (args.n == 10 and args.m == 10))):
+                print('Board size should be 8 x 8, 10 x 8 or 10 x 10')
                 sys.exit()
 
         if args.log_file != '':

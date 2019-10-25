@@ -38,11 +38,13 @@ var move_or_throw = -1;
 var current_player = 0;
 
 var player = new Array(2);
-player[0] = {townhalls: 4, color: "#000000", current_soldier: [-1,-1], soldiers: []};
-player[1] = {townhalls: 4, color: "#ffffff", current_soldier: [-1,-1], soldiers: []};
+player[0] = {townhalls: 4, color: "#000000", current_soldier: [-1,-1], soldiers: [], hashmap: {}};
+player[1] = {townhalls: 4, color: "#ffffff", current_soldier: [-1,-1], soldiers: [], hashmap: {}};
 
 var is_valid = 0;
 var required_move = 0;
+
+var is_stagnant = 0;
 
 function SwitchPlayer()
 {
@@ -409,7 +411,7 @@ function Guides(x, y, guide)
 												tx = x + cdx[i][j][k];
 												ty = y + cdy[i][j][k] * direction;
 
-												if(!isInBoard(tx, ty) || positions[tx][ty].piece != 0)
+												if(!isInBoard(tx, ty) || (positions[tx][ty].piece != 0))
 														continue;
 
 												if(guide)
@@ -565,32 +567,71 @@ function check_end()
 		return;
 }
 
-var startX = null;
-var startY = null;
-function IsClickValid(mouse)
+function getBoardHash()
 {
+		var s = "";
 		for(var i = 0; i < cols; i++)
 		{
 				for(var j = 0; j < rows; j++)
 				{
+		  			s += positions[i][j].piece.toString();
+				}
+		}
+		return s;
+}
+
+var startX = null;
+var startY = null;
+
+function IsClickValid(mouse)
+{
+		var check = 0;
+		for(var i = 0; (check == 0) && (i < cols); i++)
+		{
+				for(var j = 0; (check == 0) && (j < rows); j++)
+				{
 						if(positions[i][j].x - spacing / 2 < mouse.x && positions[i][j].x + spacing / 2 > mouse.x && positions[i][j].y - spacing / 2 < mouse.y && positions[i][j].y + spacing / 2 > mouse.y)
 						{
               	valid = false;
+
+								var num_soldiers_opponent_before = player[current_player].soldiers.length;
+
 								if(positions[i][j].piece == 1 - 2 * current_player)
 								{
 										if(required_move == 1)
 												valid = DeSelectSoldier();
 										valid = SelectSoldier(i, j);
 								}
-								if((positions[i][j].guide == 2 || positions[i][j].guide == 3) && (move_or_throw == 1 || move_or_throw == -1))
+								else
 								{
-										valid = ThrowBomb(i, j);
-								}
-								if((positions[i][j].guide == 1 || positions[i][j].guide == 3) && (move_or_throw == 0 || move_or_throw == -1))
-								{
-										valid = MoveSoldier(i, j);
+										if((positions[i][j].guide == 2 || positions[i][j].guide == 3) && (move_or_throw == 1 || move_or_throw == -1))
+										{
+												valid = ThrowBomb(i, j);
+										}
+
+										if((positions[i][j].guide == 1 || positions[i][j].guide == 3) && (move_or_throw == 0 || move_or_throw == -1))
+										{
+												valid = MoveSoldier(i, j);
+										}
+
+										var board_hash = getBoardHash();
+										if(board_hash in player[1 - current_player].hashmap)
+										{
+												player[1 - current_player].hashmap[board_hash] += 1;
+												if(player[1 - current_player].hashmap[board_hash] == 3)
+												{
+														is_stagnant = 1;
+														required_move = 2;
+												}
+										}
+										else
+										{
+												player[1 - current_player].hashmap[board_hash] = 1;
+										}
+
 								}
 								is_valid = valid;
+								check = 1;
 						}
 				}
 		}
