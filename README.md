@@ -22,8 +22,8 @@ The rules of the original game can be found [here](https://nestorgames.com/ruleb
 
 
 ### Stalemate
-**Case 1**: Player A (or B) kills the last soldier of Player B (or A).  
-**Case 2**: Both Players have soldiers left, but Player B (or A) has no immediate moves to play
+Case 1: Player A (or B) kills the last soldier of Player B (or A).  
+Case 2: Both Players have soldiers left, but Player B (or A) has no immediate moves to play
 
 ### Stagnant Game
 If exactly the same board position is repeated thrice after the move of a player then the player is said to have forced a  Stagnant Game.
