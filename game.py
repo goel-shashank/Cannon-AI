@@ -201,8 +201,8 @@ class Game:
 				elif(piece == -2):
 					townhallsB += 1
 
-		townhallsA = self.cols / 2 - townhallsA
-		townhallsB = self.cols / 2 - townhallsB
+		townhallsA = self.cols / 2 - townhallsB
+		townhallsB = self.cols / 2 - townhallsA
 		return self.calculate_score(townhallsA, townhallsB, soldiersA, soldiersB, error_state)[int(id) - 1]
 
 	def check_finished(self):
