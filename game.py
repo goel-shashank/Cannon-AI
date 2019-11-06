@@ -189,8 +189,8 @@ class Game:
 
 		positions = list(self.driver.execute_script('return positions;'))
 
-		for i in range(self.rows):
-			for j in range(self.cols):
+		for i in range(self.cols):
+			for j in range(self.rows):
 				piece = dict(positions[i][j])['piece']
 				if(piece == 2):
 					townhallsA += 1
@@ -201,8 +201,7 @@ class Game:
 				elif(piece == -2):
 					townhallsB += 1
 
-		townhallsA = self.cols / 2 - townhallsB
-		townhallsB = self.cols / 2 - townhallsA
+		townhallsA, townhallsB = self.cols // 2 - townhallsB, self.cols // 2 - townhallsA
 		return self.calculate_score(townhallsA, townhallsB, soldiersA, soldiersB, error_state)[int(id) - 1]
 
 	def check_finished(self):
@@ -290,6 +289,8 @@ class Game:
 				part = parts[0] + '}'
 				out = json.loads(part)
 				exec("self.execute_move(\"" + out['data'] + "\")")
+			print(self.get_score(0, error_state = 0))
+			print(self.get_score(1, error_state = 0))
 
 if __name__ == "__main__":
 	game = Game(8, 8, 'GUI')
