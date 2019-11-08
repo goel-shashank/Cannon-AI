@@ -143,7 +143,7 @@ This score will be based on the extent of victory. It is calculated as follows:
 | 1 |	0 |	8 |	2 |
 | 0 |	0 |	6 |	4 |
 | 1 |	1 |	6 |	4 |
-| 4 |	3 |	4 |	6 |
+| 0 |	1 |	4 |	6 |
 
 #### Stagnant Game
 
