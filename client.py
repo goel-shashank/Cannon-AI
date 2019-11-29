@@ -96,13 +96,13 @@ class Client(Communicator):
 				data : a dictionary of the following format:
 				{
 						meta : The meta data in case of an error ( UNEXPECTED STOP, WRONG MOVE etc.), otherwise ''
-						action : The action to be taken (KILLPROC, NORMAL, FINISH, INIT)
+						action : The action to be taken (KILLPROC, NORMAL, FINISH, INIT, STAGNANT)
 						data : Move String or '' in case of an Error
 				}
 		Returns:
 				success_flag : True if successful in sending, False otherwise
 		"""
-		if((data['action'] == 'KILLPROC') or (data['action'] == 'FINISH')):
+		if((data['action'] == 'KILLPROC') or (data['action'] == 'FINISH') or (data['action'] == 'STAGNANT')):
 			super(Client,self).closeChildProcess()
 
 		sendData = json.dumps(data)
@@ -110,7 +110,7 @@ class Client(Communicator):
 		if(not success_flag):
 			print('ERROR : FAILED TO SEND DATA TO SERVER')
 			super(Client,self).closeSocket()
-		elif((data['action'] == 'KILLPROC') or (data['action'] == 'FINISH')):
+		elif((data['action'] == 'KILLPROC') or (data['action'] == 'FINISH') or (data['action'] == 'STAGNANT')):
 			super(Client,self).closeSocket()
 		return success_flag
 
@@ -144,6 +144,11 @@ class Client(Communicator):
 					super(Client,self).closeChildProcess()
 					super(Client,self).closeSocket()
 					retData = data['data']
+			elif(data['action'] == 'STAGNANT'):
+					print(data['meta'])
+					super(Client,self).closeChildProcess()
+					super(Client,self).closeSocket()
+
 		return retData
 
 	def RecvDataFromProcess(self):
@@ -162,7 +167,7 @@ class Client(Communicator):
 				retData : dictionary of the nature :
 								  {
 												meta : '' / MetaData in case of an Error
-												action : 'NORMAL' / 'KILLPROC' in case of an Error
+												action : 'NORMAL' / 'KILLPROC' / 'STAGNANT' in case of an Error
 												data : 'DATA' / '' in case of an Error
 										}
 								  None in case of an error
@@ -193,6 +198,7 @@ class Client(Communicator):
 			else:
 				retData = {'meta':'TIMEOUT','action':'FINISH','data':''}
 				print('ERROR : THIS CLIENT RAN OUT OF TIME!')
+
 		return retData
 
 
@@ -269,6 +275,7 @@ def game_loop(args):
 							' : Player ' +  str(int(player_id)%2+1) + ' SCORE : ' + str(game.get_score(int(player_id)%2+1, player_id))
 			client.SendData2Server(move)
 			break
+
 		move['data'] = move['data'].strip()
 		print("You played : " + move['data'])
 		success = game.execute_move(move['data'])
@@ -292,16 +299,23 @@ def game_loop(args):
 			message['data'] = move['data']
 			message['meta'] = 'Player ' +  str(player_id) + ' SCORE : ' + str(game.get_score(player_id)) +  \
 							' : Player ' +  str(int(player_id)%2+1) + ' SCORE : ' + str(game.get_score(int(player_id)%2+1))
-			# print('YOU WIN!')
+			print('YOU WIN!')
 			if player_id == '1':
 				print('Your Score : ' + str(game.get_score(1)))
 				print('Opponent\'s Score : ' + str(game.get_score(2)))
 			else:
 				print('Your Score : ' + str(game.get_score(2)))
 				print('Opponent\'s Score : ' + str(game.get_score(1)))
+		elif success == 3:
+			score = int(min(game.get_score(player_id, player_id), game.get_score(int(player_id)%2+1, player_id)))
+			message['data'] = ''
+			message['action'] = 'STAGNANT'
+			message['meta'] = 'STAGNANT GAME' + \
+								' : Player ' +  str(player_id) + ' SCORE : ' + str(score + game.get_score(player_id, player_id) - int(game.get_score(player_id, player_id))) +  \
+								' : Player ' +  str(int(player_id)%2+1) + ' SCORE : ' + str(score + game.get_score(int(player_id)%2+1, player_id) - int(game.get_score(int(player_id)%2+1, player_id)))
 
 		client.SendData2Server(message)
-		if message['action'] == 'FINISH' or message['action'] == 'KILLPROC':
+		if message['action'] == 'STAGNANT' or message['action'] == 'FINISH' or message['action'] == 'KILLPROC':
 			break
 
 		## Listen to Other Player's Move
@@ -314,7 +328,7 @@ def game_loop(args):
 				print("Player 1 played : " + move)
 			success = game.execute_move(move)
 			if success == 2:
-				# print('OTHER PLAYER WINS!')
+				print('OTHER PLAYER WINS!')
 				if player_id == '1':
 					print('Your Score : ' + str(game.get_score(1)))
 					print('Opponent\'s Score : ' + str(game.get_score(2)))
