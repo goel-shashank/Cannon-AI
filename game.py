@@ -90,91 +90,77 @@ class Game:
 
 	def calculate_score(self, tA, tB, sA, sB, error_state):
 		if(error_state == '1'):
-			tB = 2
-		elif(error_state == '2'):
 			tA = 2
+		elif(error_state == '2'):
+			tB = 2
 
-		if(tA == 2 and tB == 0):
+		if(tA == 4 and tB == 2):
 			scoreA = 10
 			scoreB = 0
-		elif(tA == 2 and tB == 1):
+		elif(tA == 3 and tB == 2):
 			scoreA = 8
 			scoreB = 2
-		elif(tA == 1 and tB == 2):
+		elif(tA == 2 and tB == 3):
 			scoreA = 2
 			scoreB = 8
-		elif(tA == 0 and tB == 2):
+		elif(tA == 2 and tB == 4):
 			scoreA = 0
 			scoreB = 10
 		else:
-			if(self.check_stagnant()):
-				if(tA == 1 and tB == 0):
-					scoreA = 7
-					scoreB = 3
-				elif(tA == 0 and tB == 0):
-					scoreA = 5
-					scoreB = 5
-				elif(tA == 1 and tB == 1):
-					scoreA = 5
-					scoreB = 5
-				elif(tA == 0 and tB == 1):
-					scoreA = 3
-					scoreB = 7
-			else:
-				if(self.get_current_player() == 1):
-					if(self.driver.execute_script('return player[current_player].soldiers.length;') == 0):
-						if(tA == 1 and tB == 0):
-							scoreA = 10
-							scoreB = 0
-						elif(tA == 0 and tB == 0):
-							scoreA = 8
-							scoreB = 2
-						elif(tA == 1 and tB == 1):
-							scoreA = 8
-							scoreB = 2
-						elif(tA == 0 and tB == 1):
-							scoreA = 6
-							scoreB = 4
-					else:
-						if(tA == 1 and tB == 0):
-							scoreA = 8
-							scoreB = 2
-						elif(tA == 0 and tB == 0):
-							scoreA = 6
-							scoreB = 4
-						elif(tA == 1 and tB == 1):
-							scoreA = 6
-							scoreB = 4
-						elif(tA == 0 and tB == 1):
-							scoreA = 4
-							scoreB = 6
+			if(self.get_current_player() == 1):
+				if(self.driver.execute_script('return player[current_player].soldiers.length;') == 0):
+					if(tA == 4 and tB == 3):
+						scoreA = 10
+						scoreB = 0
+					elif(tA == 4 and tB == 4):
+						scoreA = 8
+						scoreB = 2
+					elif(tA == 3 and tB == 3):
+						scoreA = 8
+						scoreB = 2
+					elif(tA == 3 and tB == 4):
+						scoreA = 6
+						scoreB = 4
 				else:
-					if(self.driver.execute_script('return player[current_player].soldiers.length;') == 0):
-						if(tA == 1 and tB == 0):
-							scoreA = 4
-							scoreB = 6
-						elif(tA == 0 and tB == 0):
-							scoreA = 2
-							scoreB = 8
-						elif(tA == 1 and tB == 1):
-							scoreA = 2
-							scoreB = 8
-						elif(tA == 0 and tB == 1):
-							scoreA = 0
-							scoreB = 10
-					else:
-						if(tA == 1 and tB == 0):
-							scoreA = 6
-							scoreB = 4
-						elif(tA == 0 and tB == 0):
-							scoreA = 4
-							scoreB = 6
-						elif(tA == 1 and tB == 1):
-							scoreA = 4
-							scoreB = 6
-						elif(tA == 0 and tB == 1):
-							scoreA = 2
-							scoreB = 8
+					if(tA == 4 and tB == 3):
+						scoreA = 8
+						scoreB = 2
+					elif(tA == 4 and tB == 4):
+						scoreA = 6
+						scoreB = 4
+					elif(tA == 3 and tB == 3):
+						scoreA = 6
+						scoreB = 4
+					elif(tA == 3 and tB == 4):
+						scoreA = 4
+						scoreB = 6
+			else:
+				if(self.driver.execute_script('return player[current_player].soldiers.length;') == 0):
+					if(tA == 4 and tB == 3):
+						scoreA = 4
+						scoreB = 6
+					elif(tA == 4 and tB == 4):
+						scoreA = 2
+						scoreB = 8
+					elif(tA == 3 and tB == 3):
+						scoreA = 2
+						scoreB = 8
+					elif(tA == 3 and tB == 4):
+						scoreA = 0
+						scoreB = 10
+				else:
+					if(tA == 4 and tB == 3):
+						scoreA = 6
+						scoreB = 4
+					elif(tA == 4 and tB == 4):
+						scoreA = 4
+						scoreB = 6
+					elif(tA == 3 and tB == 3):
+						scoreA = 4
+						scoreB = 6
+					elif(tA == 3 and tB == 4):
+						scoreA = 2
+						scoreB = 8
 
 		scoreA = scoreA + float(sA) / 100.0
 		scoreB = scoreB + float(sB) / 100.0
@@ -241,7 +227,7 @@ class Game:
 	## Move types
 	# S - Select a Soldier
 	# M - Move a soldier
-	# B - Throw a Bomb
+	# B - Bombard a shot
 
 	"""
 	def execute_move(self, cmd) :
@@ -276,8 +262,10 @@ class Game:
 
 		if(not (string_valid and move_valid)):
 			success = 0
-		elif(finished or stagnant):
+		elif(finished):
 			success = 2
+		elif(stagnant):
+			success = 3
 
 		return success
 

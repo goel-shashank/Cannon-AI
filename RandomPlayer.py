@@ -62,8 +62,8 @@ class RandomPlayer:
 
 				if(state == 1):
 					while(1):
-						r = random.randint(0, 6)
-						if(r < 6):
+						r = random.randint(0, 10)
+						if(r < 10):
 							move, type, x, y = self.moveSoldier()
 						else:
 							move, type, x, y = self.throwBomb()
